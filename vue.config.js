@@ -31,12 +31,26 @@ module.exports = {
   productionSourceMap: false,
   devServer: {
     port: port,
-    open: true,
+    open: true, // 自动打开浏览器
     overlay: {
       warnings: false,
       errors: true
     },
-    before: require('./mock/mock-server.js')
+    proxy: {
+      // 只要axios请求中带有/api的url,就会触发代理机制
+      '/dev-api': {
+        // 目标路径：target(我们要代理请求的地址)
+        target: 'http://localhost:8080/admin',
+        // 允许跨域
+        changOrigin: true,
+        // 重写路径 api代替了目标路径
+        pathRewrite: {
+          '^/dev-api': ''
+        }
+      }
+    }
+
+    // before: require('./mock/mock-server.js')
   },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that
