@@ -43,10 +43,12 @@
 
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
 
+<!--
       <div class="tips">
         <span style="margin-right:20px;">username: admin</span>
         <span> password: any</span>
       </div>
+-->
 
     </el-form>
   </div>
@@ -54,6 +56,7 @@
 
 <script>
 import { validUsername } from '@/utils/validate'
+import { login } from '@/api/login'
 
 export default {
   name: 'Login',
@@ -109,13 +112,23 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$router.push({ path: '/dashboard' })
-          // this.$store.dispatch('user/login', this.loginForm).then(() => {
-          //   this.$router.push({ path: this.redirect || '/' })
-          //   this.loading = false
-          // }).catch(() => {
-          //   this.loading = false
-          // })
+          // 提交逻辑
+          login(this.loginForm).then(res => {
+            console.log(res)
+            const token = res.headers['authorization']
+            console.log('token : ' + token)
+            const userInfo = res.data.data
+            console.log('userInfo : ')
+            console.log(userInfo)
+            // 把数据共享出去
+            this.$store.commit('SET_TOKEN', token)
+            this.$store.commit('SET_USERINFO', userInfo)
+            // this.$store.getters.token = token
+            this.loading = false
+            this.$router.push({ path: this.redirect || '/' })
+          }).catch(() => {
+            this.loading = false
+          })
         } else {
           console.log('error submit!!')
           return false
@@ -193,7 +206,7 @@ $light_gray:#eee;
     overflow: hidden;
   }
 
-  .tips {
+/*  .tips {
     font-size: 14px;
     color: #fff;
     margin-bottom: 10px;
@@ -203,7 +216,7 @@ $light_gray:#eee;
         margin-right: 16px;
       }
     }
-  }
+  }*/
 
   .svg-container {
     padding: 6px 5px 6px 15px;
