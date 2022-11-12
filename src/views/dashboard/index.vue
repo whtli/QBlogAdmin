@@ -22,7 +22,7 @@ export default {
     testConnection() {
       testConn(this.connection).then(res => {
         // console.log(res.code)
-        this.connection = res.data.userBar
+        this.connection = res.data.data.userBar
       })
     }
   },
