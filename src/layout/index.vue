@@ -6,13 +6,15 @@
       <div :class="{'fixed-header':fixedHeader}">
         <navbar />
       </div>
+<!--      新增-->
+      <tags-View />
       <app-main />
     </div>
   </div>
 </template>
 
 <script>
-import { Navbar, Sidebar, AppMain } from './components'
+import { Navbar, Sidebar, AppMain, TagsView } from './components'
 import ResizeMixin from './mixin/ResizeHandler'
 
 export default {
@@ -20,7 +22,8 @@ export default {
   components: {
     Navbar,
     Sidebar,
-    AppMain
+    AppMain,
+    TagsView // 新增
   },
   mixins: [ResizeMixin],
   computed: {
