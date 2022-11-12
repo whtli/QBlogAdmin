@@ -7,7 +7,7 @@
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
+          <img :src="'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif'+'?imageView2/1/w/80/h/80'" class="user-avatar">
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
@@ -35,6 +35,8 @@
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
+import { logout } from '@/api/login'
+import store from '@/store'
 
 export default {
   components: {
@@ -52,9 +54,13 @@ export default {
       this.$store.dispatch('app/toggleSideBar')
     },
     async logout() {
-      // await this.$store.dispatch('user/logout')
-      // this.$router.push(`/login?redirect=${this.$route.fullPath}`)
-      this.$router.push(`/login`)
+      logout().then(res => {
+        console.log('logout succ')
+        this.$store.commit('REMOVE_INFO')
+        this.$router.push('/login')
+      }).catch(error => {
+        console.log(error)
+      })
     }
   }
 }
