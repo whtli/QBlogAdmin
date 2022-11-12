@@ -253,7 +253,7 @@ const store = new Vuex.Store({
 store/getters.js
 
 ```js
-  getUser: state => state.userInfo, // 新增
+  getUser: state => state.userInfo // 新增
 ```
 
 Navbar.vue  ，退出时提示鉴权失败（后端有问题） ==> 没打开本地的redis服务。。。裂开
@@ -270,5 +270,7 @@ Navbar.vue  ，退出时提示鉴权失败（后端有问题） ==> 没打开本
     }
 ```
 
-
+## 4. 添加TagsView
++ [参考博客1](https://www.cnblogs.com/choii/p/15973265.html)
++ [参考博客2](https://panjiachen.github.io/vue-element-admin-site/zh/guide/essentials/tags-view.html#visitedviews-cachedviews)
 
