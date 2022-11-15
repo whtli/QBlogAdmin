@@ -275,7 +275,7 @@ Navbar.vue  ，退出时提示鉴权失败（后端有问题） ==> 没打开本
 + [参考博客2](https://panjiachen.github.io/vue-element-admin-site/zh/guide/essentials/tags-view.html#visitedviews-cachedviews)
 
 ## 5. 添加markdown编辑器
-### 使用mavon-editor
+### 使用[mavon-editor](github.com/hinesboy/mavonEditor)
 + 下载
   ```javascript
   npm install mavon-editor --save
@@ -290,6 +290,8 @@ Navbar.vue  ，退出时提示鉴权失败（后端有问题） ==> 没打开本
   // use
   Vue.use(mavonEditor)
   ```
++ 完成新增博客功能
+
   [BlogWrite.vue](./src/views/blog/BlogWrite.vue)
   ```javascript
     <div id="main">
