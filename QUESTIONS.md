@@ -274,3 +274,160 @@ Navbar.vue  ，退出时提示鉴权失败（后端有问题） ==> 没打开本
 + [参考博客1](https://www.cnblogs.com/choii/p/15973265.html)
 + [参考博客2](https://panjiachen.github.io/vue-element-admin-site/zh/guide/essentials/tags-view.html#visitedviews-cachedviews)
 
+## 5. 添加markdown编辑器
+### 使用mavon-editor
++ 下载
+  ```javascript
+  npm install mavon-editor --save
+  ```
++ 引入
+
+  [main.js](./src/main.js)
+  ```javascript
+  // 全局注册
+  import mavonEditor from 'mavon-editor'
+  import 'mavon-editor/dist/css/index.css'
+  // use
+  Vue.use(mavonEditor)
+  ```
+  [BlogWrite.vue](./src/views/blog/BlogWrite.vue)
+  ```javascript
+    <div id="main">
+      <el-form ref="blogForm" :model="blogForm" :rules="rules" style="margin-left: 30px; margin-right: 30px">
+        <el-form-item label="标题" prop="title">
+          <el-input v-model="blogForm.title" />
+        </el-form-item>
+        <el-form-item label="描述" prop="description">
+          <el-input v-model="blogForm.description" type="textarea" />
+        </el-form-item>
+        <el-form-item label="正文" prop="content">
+          <br>
+          <mavon-editor ref="md" v-model="blogForm.content" :html="false" @imgAdd="imgAdd" @imgDel="imgDel" @save="contentSave" />
+        </el-form-item>
+        <el-form-item label="字数" prop="words">
+          <el-input v-model="blogForm.words" />
+        </el-form-item>
+        <el-form-item label="浏览次数" prop="words">
+          <el-input v-model="blogForm.views" />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="blogSubmit">
+            发布
+          </el-button>
+          <el-button @click="blogReset">
+            重置
+          </el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  ```
+  ```javascript
+  data() {
+    return {
+      blogForm: {
+        id: '',
+        title: '',
+        firstPicture: '',
+        description: '',
+        content: '',
+        isPublished: false,
+        isCommentEnabled: false,
+        views: 0,
+        words: null,
+        readTime: null,
+        categoryId: null,
+        isTop: false,
+        password: ''
+      },
+      rules: {
+        title: [
+          { required: true, message: '请输入标题', trigger: 'blur' },
+          { min: 3, max: 100, message: '长度在3到100个字符', trigger: 'blur' }
+        ],
+        description: [
+          { required: true, message: '请输入摘要', trigger: 'blur' }
+        ],
+        content: [
+          { required: true, message: '请输入正文', trigger: 'blur' }
+        ]
+      }
+    }
+  ```
+  ```javascript
+    // 保存博客内容
+    contentSave(value, render) {
+      console.log('this is render' + render)
+      console.log('this is value' + value)
+      console.log(this.$refs.md.d_render)
+    }
+  ```
+  ```javascript
+    // 提交（发布/更新）博客
+    blogSubmit() {
+      this.$refs.blogForm.validate((valid) => {
+        if (valid) {
+          submitBlog(this.blogForm).then(res => {
+            console.log(res)
+            this.$alert('发布成功', '提示', {
+              confirmButtonText: '确定',
+              callback: action => {
+                this.$router.push('/blog/list')
+                console.log(action)
+              }
+            })
+          })
+        } else {
+          console.log('error submit!')
+          return false
+        }
+      })
+    }
+  ```
++ 完成图像的上传与删除功能
+
+  [BlogWrite.vue](./src/views/blog/BlogWrite.vue)
+  ```vue
+  <template>
+    <mavon-editor ref=md @imgAdd="imgAdd" @imgDel="imgDel"></mavon-editor>
+  </template>
+  ```
+  ```javascript
+    // 上传图像，绑定@imgAdd event
+    imgAdd(pos, $file) {
+      // 第一步.将图片上传到服务器.
+      var formdata = new FormData()
+      formdata.append('image', $file)
+      console.log($file)
+      addImage(formdata).then(res => {
+        // 第二步.将返回的url替换到文本原位置![...](0) -> ![...](url)
+        if (res.status === 200) {
+          const url = res.data.data.imageUrl
+          this.$refs.md.$img2Url(pos, url)
+        } else {
+          this.$message({ type: res.status, message: 'Image upload failed!' })
+        }
+        // $vm 指为mavonEditor实例，可以通过如下两种方式获取
+        // 1. 通过引入对象获取: `import {mavonEditor} from ...` 等方式引入后，`$vm`为`mavonEditor`
+        // 2. 通过$refs获取: html声明ref : `<mavon-editor ref=md ></mavon-editor>，`$vm`为 `this.$refs.md`
+        // vm.$img2Url(pos, url)
+      })
+    }
+  ```
+  ```javascript
+    // 删除图像
+    imgDel(pos) {
+      const url = pos[0]
+      deleteImg(url).then(response => {
+        this.$alert('图片删除成功：' + response.data.data, '提示', {
+          confirmButtonText: '确定'
+        })
+      }).catch(error => {
+        this.$message({
+          message: error,
+          type: 'error',
+          showClose: true,
+          center: true }
+        )
+      })
+    }
+  ```
