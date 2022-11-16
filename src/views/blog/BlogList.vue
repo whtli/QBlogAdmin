@@ -1,10 +1,10 @@
 <template>
   <div>
     <div style="padding: 10px 0">
-      <el-input placeholder="请输入标题" :clearable="true" style="width: 200px" suffix-icon="el-icon-document-remove"></el-input>
-      <el-input placeholder="请输入描述" :clearable="true" style="width: 200px" suffix-icon="el-icon-document"></el-input>
-      <el-input placeholder="请输入作者" :clearable="true" style="width: 200px" suffix-icon="el-icon-user"></el-input>
-      <el-button @click.native.prevent="getBlogList" style="margin-left: 5px" type="primary">搜索</el-button>
+      <el-input placeholder="请输入标题" v-model="queryInfo.title" :clearable="true" style="width: 200px" suffix-icon="el-icon-document-remove"></el-input>
+      <el-input placeholder="请输入描述" v-model="queryInfo.categoryId" :clearable="true" style="width: 200px" suffix-icon="el-icon-document"></el-input>
+      <el-button @click.native.prevent="getBlogList" style="margin-left: 5px" type="primary">查询</el-button>
+<!--      <el-button @click.native.prevent="getBlogList" style="margin-left: 5px" type="primary">刷新列表</el-button>-->
     </div>
     <div style="margin: 10px 0">
       <el-button type="primary"><i class="el-icon-circle-plus-outline"></i> 新增</el-button>
@@ -12,11 +12,11 @@
       <el-button type="primary"><i class="el-icon-bottom"></i> 导入</el-button>
       <el-button type="primary"><i class="el-icon-top"></i> 导出</el-button>
     </div>
-    <el-table :data="blogList" border :stripe="true" :height="400" :header-cell-class-name="tableHeaderColor">
-      <el-table-column label="序号" prop="categoryId" width="50"> </el-table-column>
+    <el-table :data="blogList" border :stripe="true" :height="500" :header-cell-class-name="tableHeaderColor">
+      <el-table-column label="序号" prop="id" width="50"> </el-table-column>
       <el-table-column label="标题" prop="title" width="50"> </el-table-column>
       <el-table-column label="描述" prop="description" width="120"> </el-table-column>
-      <el-table-column label="正文" prop="content" width="100"> </el-table-column>
+<!--      <el-table-column label="正文" prop="content" width="100"> </el-table-column>-->
       <el-table-column label="公开" prop="isPublished" width="50"> </el-table-column>
       <el-table-column label="创建时间" prop="createTime" width="150"> </el-table-column>
       <el-table-column label="更新时间" prop="updateTime" width="150"> </el-table-column>
@@ -25,40 +25,115 @@
       <el-table-column label="分类" prop="categoryId" width="50"> </el-table-column>
       <el-table-column label="作者" prop="userId" width="50"> </el-table-column>
       <el-table-column label="操作">
-        <template :slot-scope="scope">
-          <el-button type="success"><i class="el-icon-edit"> </i>编辑</el-button>
-          <el-button type="danger"><i class="el-icon-remove"></i>删除</el-button>
+        <template v-slot="scope">
+          <el-button type="primary" @click="readBlog(scope.row.id)"><i class="el-icon-view"> </i> 查看</el-button>
+          <el-button type="success" @click="updateBlog(scope.row.id)"><i class="el-icon-edit"> </i> 编辑</el-button>
+          <el-button type="danger" @click="deleteBlog(scope.row.id)"><i class="el-icon-remove"></i> 删除</el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <div style="padding: 10px 0">
       <el-pagination
+        background
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="queryInfo.pageNum"
         :page-sizes="[5, 10, 15, 20]"
-        :page-size="10"
+        :page-size="queryInfo.pageSize"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="400">
+        :total="total">
       </el-pagination>
     </div>
   </div>
 </template>
 
 <script>
-import { getBlogListAuto } from '@/api/blog/BlogList'
+import { getBlogs, deleteBlogById } from '@/api/blog/BlogList'
 
 export default {
   name: 'BlogList',
   data() {
     return {
+      queryInfo: {
+        title: '',
+        categoryId: null,
+        pageNum: 1,
+        pageSize: 10
+      },
+      total: 0,
       blogList: [],
       tableHeaderColor: 'tableHeaderColor'
     }
   },
+  watch: {
+    $route: {
+      // 监听路由变化，由其他界面跳转而来时，刷新博客列表
+      handler(val, oldval) {
+        // 新路由信息
+        console.log(val)
+        // 老路由信息
+        console.log(oldval)
+        this.getBlogList()
+      },
+      // 深度观察监听
+      deep: true
+    }
+  },
   methods: {
+    handleSizeChange(val) {
+      // 每页显示的条数
+      this.queryInfo.pageSize = val
+      this.getBlogList()
+      console.log(`每页 ${val} 条`)
+    },
+    handleCurrentChange(val) {
+      // 显示第几页
+      this.queryInfo.pageNum = val
+      this.getBlogList()
+      console.log(`当前页: ${val}`)
+    },
+    // 查询博客列表
     getBlogList() {
-      console.log('get blog list ... ')
-      getBlogListAuto().then(res => {
-        this.blogList = res.data.data.blogList
+      // console.log('get blog list ... ')
+      // console.log(this.queryInfo)
+      getBlogs(this.queryInfo).then(res => {
+        this.blogList = res.data.data.pageData.records
+        this.total = res.data.data.total
+      })
+    },
+    // TODO:阅读文章
+    readBlog() {
+
+    },
+    // 更新指定id的博客
+    updateBlog(id) {
+      this.$alert('即将进入博客编辑界面', '提示', {
+        confirmButtonText: '确定',
+        callback: action => {
+          this.$router.push(`/blog/edit/${id}`)
+          console.log(action)
+        }
+      })
+    },
+    // 根据id删除博客
+    deleteBlog(id) {
+      this.$confirm('此操作将永久删除该博客，是否删除?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        dangerouslyUseHTMLString: true
+      }).then(() => {
+        deleteBlogById(id).then(response => {
+          this.$message.success(response.data.message)
+          console.log(response.data.data.message)
+          this.getBlogList()
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除操作'
+        })
       })
     }
   },

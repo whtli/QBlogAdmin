@@ -32,8 +32,7 @@
 </template>
 
 <script>
-import { addImage, deleteImg, submitBlog } from '@/api/blog/BlogWrite'
-import request from '@/utils/request'
+import { addImage, deleteImg, submitBlog, getBlogById } from '@/api/blog/BlogWrite'
 
 export default {
   name: 'BlogWrite',
@@ -68,7 +67,27 @@ export default {
       }
     }
   },
+  created() {
+    // 当界面被创建时，监听是否有路由参数
+    // 若有说明是修改指定博客，此时需要先查询并显示
+    // 若无说明是新增博客
+    if (this.$route.params.id) {
+      this.getBlog(this.$route.params.id)
+    }
+  },
   methods: {
+    // 根据id查询唯一的博客
+    getBlog(id) {
+      getBlogById(id).then(res => {
+        // 把查询结果赋值给this.blogList，使其显示到编辑界面上
+        this.blogForm = res.data.data
+      }).catch(() => {
+        this.$message({
+          type: 'warning',
+          message: '获取文博客失败，请重试'
+        })
+      })
+    },
     contentSave(value, render) {
       console.log('this is render' + render)
       console.log('this is value' + value)

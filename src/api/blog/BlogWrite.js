@@ -1,5 +1,13 @@
 import request from '@/utils/request'
 
+export function getBlogById(id) {
+  return request({
+    url: '/blog/getBlogById',
+    method: 'GET',
+    params: { id }
+  })
+}
+
 export function addImage(formdata) {
   return request({
     url: '/blog/addImage',
