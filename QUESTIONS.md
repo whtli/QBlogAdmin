@@ -43,8 +43,7 @@
 
 ### 3.1 前端
 
-permission.js   - >  router.beforeEach
-
+[permission.js](./src/permission.js)   - >  router.beforeEach
 ```js
 router.beforeEach(async(to, from, next) => {
   // start progress bar
@@ -97,66 +96,63 @@ router.beforeEach(async(to, from, next) => {
 })
 ```
 
-Login.vue
+  [Login.vue](./src/views/login/Login.vue)
+  ```js
+      handleLogin() {
+        this.$refs.loginForm.validate(valid => {
+          if (valid) {
+            this.loading = true
+            // 主要是修改提交逻辑
+            login(this.loginForm).then(res => {
+              // console.log(res)
+              const token = res.headers['authorization'] 			// 登录后获取token
+              // console.log('token : ' + token)
+              const userInfo = res.data.data
+              // console.log('userInfo : ')
+              // console.log(userInfo)
+              // 把数据共享出去
+              this.$store.commit('SET_TOKEN', token)	    		// 设置token
+              this.$store.commit('SET_USERINFO', userInfo) 		// 设置userInfo
+              // console.log(this.$store.getters.getUser)
+              this.loading = false								// 停止登录加载转圈
+              this.$router.push({ path: this.redirect || '/' })	// 登录成功后跳转到dashboard
+            }).catch(() => {
+              this.loading = false
+            })
+          } else {
+            console.log('error submit!!')
+            return false
+          }
+        })
+      }
+  ```
 
-```js
-    handleLogin() {
-      this.$refs.loginForm.validate(valid => {
-        if (valid) {
-          this.loading = true
-          // 主要是修改提交逻辑
-          login(this.loginForm).then(res => {
-            // console.log(res)
-            const token = res.headers['authorization'] 			// 登录后获取token
-            // console.log('token : ' + token)
-            const userInfo = res.data.data
-            // console.log('userInfo : ')
-            // console.log(userInfo)
-            // 把数据共享出去
-            this.$store.commit('SET_TOKEN', token)	    		// 设置token
-            this.$store.commit('SET_USERINFO', userInfo) 		// 设置userInfo
-            // console.log(this.$store.getters.getUser)
-            this.loading = false								// 停止登录加载转圈
-            this.$router.push({ path: this.redirect || '/' })	// 登录成功后跳转到dashboard
-          }).catch(() => {
-            this.loading = false
-          })
-        } else {
-          console.log('error submit!!')
-          return false
-        }
-      })
+  [request.js](./src/utils/request.js)
+  ```js
+  // request interceptor
+  service.interceptors.request.use(
+    config => {
+      // do something before request is sent
+      /* 模板写法，注释掉，后续可能考虑用回模板的getters.state   
+      if (store.getters.token) {
+        // let each request carry token
+        // ['X-Token'] is a custom headers key
+        // please modify it according to the actual situation
+        config.headers['X-Token'] = getToken()
+      }*/
+      if (store.state.token) {	// 现在的token是存储在state.token和localStorage['token']中
+        config.headers['Authorization'] = localStorage.getItem('token') // 让每个请求携带自定义token
+        console.log(config)
+      }
+      return config
+    },
+    error => {
+      // do something with request error
+      console.log(error) // for debug
+      return Promise.reject(error)
     }
-
-```
-
-request.js
-
-```js
-// request interceptor
-service.interceptors.request.use(
-  config => {
-    // do something before request is sent
-    /* 模板写法，注释掉，后续可能考虑用回模板的getters.state   
-    if (store.getters.token) {
-      // let each request carry token
-      // ['X-Token'] is a custom headers key
-      // please modify it according to the actual situation
-      config.headers['X-Token'] = getToken()
-    }*/
-    if (store.state.token) {	// 现在的token是存储在state.token和localStorage['token']中
-      config.headers['Authorization'] = localStorage.getItem('token') // 让每个请求携带自定义token
-      console.log(config)
-    }
-    return config
-  },
-  error => {
-    // do something with request error
-    console.log(error) // for debug
-    return Promise.reject(error)
-  }
-)
-```
+  )
+  ```
 
 
 
@@ -256,7 +252,7 @@ store/getters.js
   getUser: state => state.userInfo // 新增
 ```
 
-Navbar.vue  ，退出时提示鉴权失败（后端有问题） ==> 没打开本地的redis服务。。。裂开
+Navbar.vue，退出时提示鉴权失败（后端有问题） ==> 没打开本地的redis服务。。。裂开
 
 ```js
     async logout() {
@@ -272,17 +268,17 @@ Navbar.vue  ，退出时提示鉴权失败（后端有问题） ==> 没打开本
 
 ## 4. 添加TagsView
 + [参考博客1](https://www.cnblogs.com/choii/p/15973265.html)
+
 + [参考博客2](https://panjiachen.github.io/vue-element-admin-site/zh/guide/essentials/tags-view.html#visitedviews-cachedviews)
 
-## 5. 添加markdown编辑器
+## 5. 添加markdown编辑器，完成新增博客功能
 ### 使用[mavon-editor](github.com/hinesboy/mavonEditor)
 + 下载
   ```javascript
   npm install mavon-editor --save
   ```
-+ 引入
 
-  [main.js](./src/main.js)
++ 在[main.js](./src/main.js)中引入
   ```javascript
   // 全局注册
   import mavonEditor from 'mavon-editor'
@@ -290,8 +286,8 @@ Navbar.vue  ，退出时提示鉴权失败（后端有问题） ==> 没打开本
   // use
   Vue.use(mavonEditor)
   ```
+  
 + 完成新增博客功能
-
   [BlogWrite.vue](./src/views/blog/BlogWrite.vue)
   ```javascript
     <div id="main">
@@ -323,6 +319,7 @@ Navbar.vue  ，退出时提示鉴权失败（后端有问题） ==> 没打开本
       </el-form>
     </div>
   ```
+  
   ```javascript
   data() {
     return {
@@ -355,6 +352,7 @@ Navbar.vue  ，退出时提示鉴权失败（后端有问题） ==> 没打开本
       }
     }
   ```
+  
   ```javascript
     // 保存博客内容
     contentSave(value, render) {
@@ -363,6 +361,7 @@ Navbar.vue  ，退出时提示鉴权失败（后端有问题） ==> 没打开本
       console.log(this.$refs.md.d_render)
     }
   ```
+  
   ```javascript
     // 提交（发布/更新）博客
     blogSubmit() {
@@ -385,14 +384,15 @@ Navbar.vue  ，退出时提示鉴权失败（后端有问题） ==> 没打开本
       })
     }
   ```
+  
 + 完成图像的上传与删除功能
-
   [BlogWrite.vue](./src/views/blog/BlogWrite.vue)
   ```vue
   <template>
     <mavon-editor ref=md @imgAdd="imgAdd" @imgDel="imgDel"></mavon-editor>
   </template>
   ```
+  
   ```javascript
     // 上传图像，绑定@imgAdd event
     imgAdd(pos, $file) {
@@ -415,6 +415,8 @@ Navbar.vue  ，退出时提示鉴权失败（后端有问题） ==> 没打开本
       })
     }
   ```
+
+  [BlogWrite.js](./src/api/blog/BlogWrite.js)
   ```javascript
     // 删除图像
     imgDel(pos) {
@@ -432,4 +434,205 @@ Navbar.vue  ，退出时提示鉴权失败（后端有问题） ==> 没打开本
         )
       })
     }
+  ```
+
+## 6. 完成博客的删、改、查(多参数查询、分页查询)功能
++ 在[BlogList.vue](./src/views/blog/BlogList.vue)界面中添加编辑、删除按钮，添加查询输入框和按钮，添加分页监听响应
+  ```vue
+  <template>
+    <div>
+      <div style="padding: 10px 0">
+        <el-input placeholder="请输入标题" v-model="queryInfo.title" :clearable="true" style="width: 200px" suffix-icon="el-icon-document-remove"></el-input>
+        <el-input placeholder="请输入描述" v-model="queryInfo.categoryId" :clearable="true" style="width: 200px" suffix-icon="el-icon-document"></el-input>
+        <el-button @click.native.prevent="getBlogList" style="margin-left: 5px" type="primary">查询</el-button>
+      </div>
+      <div style="margin: 10px 0">
+        <el-button type="primary"><i class="el-icon-circle-plus-outline"></i> 新增</el-button>
+        <el-button type="danger"><i class="el-icon-remove-outline"></i> 批量删除</el-button>
+        <el-button type="primary"><i class="el-icon-bottom"></i> 导入</el-button>
+        <el-button type="primary"><i class="el-icon-top"></i> 导出</el-button>
+      </div>
+      <el-table :data="blogList" border :stripe="true" :height="500" :header-cell-class-name="tableHeaderColor">
+        <el-table-column label="操作">
+          <template v-slot="scope">
+            <el-button type="primary" @click="readBlog(scope.row.id)"><i class="el-icon-view"> </i> 查看</el-button>
+            <el-button type="success" @click="updateBlog(scope.row.id)"><i class="el-icon-edit"> </i> 编辑</el-button>
+            <el-button type="danger" @click="deleteBlog(scope.row.id)"><i class="el-icon-remove"></i> 删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+  
+      <!--分页-->
+      <div style="padding: 10px 0">
+        <el-pagination
+          background
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="queryInfo.pageNum"
+          :page-sizes="[5, 10, 15, 20]"
+          :page-size="queryInfo.pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total">
+        </el-pagination>
+      </div>
+    </div>
+  </template>
+  ```
+
++ 在[BlogList.vue](./src/views/blog/BlogList.vue)的methods中增加对应的功能函数
+  ```javascript
+  <script>
+  import { getBlogs, deleteBlogById } from '@/api/blog/BlogList'
+  
+  export default {
+    name: 'BlogList',
+    data() {
+      return {
+        queryInfo: {
+          title: '',
+          categoryId: null,
+          pageNum: 1,
+          pageSize: 10
+        },
+        total: 0,
+        blogList: [],
+        tableHeaderColor: 'tableHeaderColor'
+      }
+    },
+    watch: {
+      $route: {
+        // 监听路由变化，由其他界面跳转而来时，刷新博客列表
+        handler(val, oldval) {
+          // 新路由信息
+          console.log(val)
+          // 老路由信息
+          console.log(oldval)
+          this.getBlogList()
+        },
+        // 深度观察监听
+        deep: true
+      }
+    },
+    methods: {
+      handleSizeChange(val) {
+        // 每页显示的条数
+        this.queryInfo.pageSize = val
+        this.getBlogList()
+        console.log(`每页 ${val} 条`)
+      },
+      handleCurrentChange(val) {
+        // 显示第几页
+        this.queryInfo.pageNum = val
+        this.getBlogList()
+        console.log(`当前页: ${val}`)
+      },
+      // 查询博客列表
+      getBlogList() {
+        getBlogs(this.queryInfo).then(res => {
+          this.blogList = res.data.data.pageData.records
+          this.total = res.data.data.total
+        })
+      },
+      // 更新指定id的博客
+      updateBlog(id) {
+        this.$alert('即将进入博客编辑界面', '提示', {
+          confirmButtonText: '确定',
+          callback: action => {
+            this.$router.push(`/blog/edit/${id}`)
+            console.log(action)
+          }
+        })
+      },
+      // 根据id删除博客
+      deleteBlog(id) {
+        this.$confirm('此操作将永久删除该博客，是否删除?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+          dangerouslyUseHTMLString: true
+        }).then(() => {
+          deleteBlogById(id).then(response => {
+            this.$message.success(response.data.message)
+            console.log(response.data.data.message)
+            this.getBlogList()
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除操作'
+          })
+        })
+      }
+    },
+    // 页面初始化之后默认查询所有博客并展示
+    mounted() {
+      this.getBlogList()
+    }
+  }
+  </script>
+  ```
+
++ 在[BlogList.js](./src/api/blog/BlogList.js)中增加对应的接口
+  ```javascript
+  import request from '@/utils/request'
+  // 查询博客列表
+  export function getBlogs(queryInfo) {
+    return request({
+      url: '/blog/getBlogs',
+      method: 'get',
+      params: { ...queryInfo }
+    })
+  }
+  // 根据id删除博客
+  export function deleteBlogById(id) {
+    return request({
+      url: '/blog/deleteBlogById',
+      method: 'delete',
+      params: { id }
+    })
+  }
+  ```
+
++ 在[BlogWrite.vue](./src/views/blog/BlogWrite.vue)界面中增加相应的功能函数
+  ```javascript
+  <script>
+  import { addImage, deleteImg, submitBlog, getBlogById } from '@/api/blog/BlogWrite'
+  
+  export default {
+    created() {
+      // 当界面被创建时，监听是否有路由参数
+      // 若有说明是修改指定博客，此时需要先查询并显示
+      // 若无说明是新增博客
+      if (this.$route.params.id) {
+        this.getBlog(this.$route.params.id)
+      }
+    },
+    methods: {
+      // 根据id查询唯一的博客
+      getBlog(id) {
+        getBlogById(id).then(res => {
+          // 把查询结果赋值给this.blogList，使其显示到编辑界面上
+          this.blogForm = res.data.data
+        }).catch(() => {
+          this.$message({
+            type: 'warning',
+            message: '获取文博客失败，请重试'
+          })
+        })
+      }
+    }
+  }
+  </script>
+  ```
+  
++ 在[BlogWrite.js](./src/api/blog/BlogWrite.js)中增加对应的接口
+  ```javascript
+  // 根据id查询唯一的博客
+  export function getBlogById(id) {
+    return request({
+      url: '/blog/getBlogById',
+      method: 'GET',
+      params: { id }
+    })
+  }
   ```

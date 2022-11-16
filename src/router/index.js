@@ -170,15 +170,22 @@ export const constantRoutes = [
     children: [
       {
         path: 'list',
-        name: 'list',
+        name: 'BlogList',
         component: () => import('@/views/blog/BlogList'),
         meta: { title: 'BlogList', icon: 'table' }
       },
       {
         path: 'write',
-        name: 'Write',
+        name: 'BlogWrite',
         component: () => import('@/views/blog/BlogWrite'),
         meta: { title: 'BlogWrite', icon: 'tree' }
+      },
+      {
+        path: 'edit/:id',
+        name: 'BlogEdit',
+        component: () => import('@/views/blog/BlogWrite'),
+        meta: { title: 'BlogEdit', icon: 'el-icon-edit' },
+        hidden: true
       }
     ]
   },
