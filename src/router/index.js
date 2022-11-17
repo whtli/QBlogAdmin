@@ -191,13 +191,13 @@ export const constantRoutes = [
   },
 
   {
-    path: '/form',
+    path: '/statistic',
     component: Layout,
     children: [
       {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
+        path: 'data',
+        name: 'Statistic',
+        component: () => import('@/views/statistic/Statistic'),
         meta: { title: 'Data Statistics', icon: 'el-icon-s-data' }
       }
     ]
