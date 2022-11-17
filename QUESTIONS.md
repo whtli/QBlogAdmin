@@ -636,3 +636,154 @@ Navbar.vue，退出时提示鉴权失败（后端有问题） ==> 没打开本�
     })
   }
   ```
+  
+## 7. 添加echarts
+### 7.1 以饼状图为例的简单图表
++ 新建vue组件并将其添加到路由文件[index.js](./src/router/index.js)中
+  ```javascript
+  export const constantRoutes = [
+    {
+      path: '/login',
+      component: () => import('@/views/login/Login'),
+      hidden: true
+    },
+  
+    {
+      path: '/404',
+      component: () => import('@/views/404'),
+      hidden: true
+    },
+  
+    {
+      path: '/',
+      component: Layout,
+      redirect: '/dashboard',
+      children: [{
+        path: 'dashboard',
+        name: 'Dashboard',
+        component: () => import('@/views/dashboard/index'),
+        meta: { title: 'Dashboard', icon: 'dashboard', affix: true }
+      }]
+    },
+  
+    // 新增的统计数据界面路由
+    {
+      path: '/statistic',
+      component: Layout,
+      children: [
+        {
+          path: 'data',
+          name: 'Statistic',
+          component: () => import('@/views/statistic/Statistic'),
+          meta: { title: 'Data Statistics', icon: 'el-icon-s-data' }
+        }
+      ]
+    },
+    
+    // 404 page must be placed at the end !!!
+    { path: '*', redirect: '/404', hidden: true }
+  ]
+  ```
+
++ 在[Statistic.vue](./src/views/statistic/Statistic.vue)中添加饼图
+  ```vue
+  <template>
+    <div>
+      <el-row class="panel-group" :gutter="20">
+        <el-col :span="8">
+          <el-card>
+            <div ref="categoryEcharts" style="height:500px;"></div>
+          </el-card>
+        </el-col>
+      </el-row>
+    </div>
+  </template>
+  
+  <script>
+  import * as echarts from 'echarts'
+  import { getStatistic } from '@/api/statistic/Statistic'
+  
+  export default {
+    name: 'Statistic',
+    data() {
+      return {
+        categoryEcharts: null,
+        categoryOption: {
+          title: {
+            text: 'Statistical Data I',
+            subtext: 'blog',
+            left: 'center'
+          },
+          tooltip: {
+            trigger: 'item'
+          },
+          legend: {
+            left: 'center',
+            top: 'bottom'
+          },
+          series: [
+            {
+              name: '数量',
+              type: 'pie',
+              radius: '50%',
+              roseType: 'area',
+              data: []
+            }
+          ]
+        }
+      }
+    },
+    mounted() {
+      // 进入界面后自动刷新统计数据
+      this.refresh()
+    },
+    methods: {
+      refresh() {
+        getStatistic().then(response => {
+          this.categoryOption.series[0].data = response.data.data.blogCountList
+          this.categoryEcharts = echarts.init(this.$refs.categoryEcharts, 'light')
+          this.categoryEcharts.setOption(this.categoryOption)
+        })
+      }
+    }
+  }
+  </script>
+  
+  <style scoped>
+  
+  </style>
+  ```
+
++ 在[Statistic.js](./src/api/statistic/Statistic.js)中定义接口函数，接收从后端传来的数据
+  ```javascript
+  import request from '@/utils/request'
+  
+  export function getStatistic() {
+    return request({
+      url: '/statistic/getStatistic',
+      method: 'GET'
+    })
+  }
+  ```
+
+### 7.2 添加地图
++ TODO
+
+### 7.3 以下是遇到的错误
+
+1. Cannot read properties of undefined (reading 'init')
+2. [ECharts] Unkown series undefined
+        
+    这两个是echart的版本问题导致的引入方式不对，只需要修改在组件中的引入方式即可，如[Statistic.vue](./src/views/statistic/Statistic.vue)
+      ```javascript
+      <script>
+        import * as echarts from 'echarts'
+        // 5以下的版本使用 import echarts from 'echarts' 因此产生报错
+        export default {
+          name: 'Statistic'
+        }
+      </script>
+      ```
+3. series not exists. Legend data should be same with series name or data name.
+
+    避坑：echarts的饼图，一定使用跟官网示例中使用的属性名，如饼图中series的data属性需要用的是的name和value，后端传过来的也一定是有name和value的VO才能正确地将图绘制出来
