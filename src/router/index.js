@@ -186,6 +186,13 @@ export const constantRoutes = [
         component: () => import('@/views/blog/BlogWrite'),
         meta: { title: 'BlogEdit', icon: 'el-icon-edit' },
         hidden: true
+      },
+      {
+        path: 'read/:id',
+        name: 'BlogRead',
+        component: () => import('@/views/blog/BlogRead'),
+        meta: { title: 'BlogRead' },
+        hidden: true
       }
     ]
   },

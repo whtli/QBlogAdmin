@@ -7,8 +7,7 @@
 <!--      <el-button @click.native.prevent="getBlogList" style="margin-left: 5px" type="primary">刷新列表</el-button>-->
     </div>
     <div style="margin: 10px 0; margin-left: 1%">
-      <el-button type="primary"><i class="el-icon-circle-plus-outline"></i> <router-link :to="{ name: 'BlogWrite'}">新增</router-link>
-      </el-button>
+      <el-button type="primary" @click="toBlogWritePage"><i class="el-icon-circle-plus-outline"></i> 新增</el-button>
       <el-button type="danger" @click="deleteBlogBatch"><i class="el-icon-remove-outline"></i> 批量删除</el-button>
 <!--      <el-button type="primary"><i class="el-icon-bottom"></i> 导入</el-button>-->
 <!--      <el-button type="primary"><i class="el-icon-top"></i> 导出</el-button>-->
@@ -113,9 +112,13 @@ export default {
         this.total = res.data.data.total
       })
     },
-    // TODO:阅读文章
-    readBlog() {
-
+    // 新增博客，跳转到写博客界面
+    toBlogWritePage() {
+      this.$router.push(`/blog/write`)
+    },
+    // 阅读指定id的文章
+    readBlog(id) {
+      this.$router.push(`/blog/read/${id}`)
     },
     // 更新指定id的博客
     updateBlog(id) {
