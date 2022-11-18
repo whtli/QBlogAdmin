@@ -15,3 +15,11 @@ export function deleteBlogById(id) {
     params: { id }
   })
 }
+
+export function deleteBlogBatchByIds(ids) {
+  return request({
+    url: '/blog/deleteBlogBatchByIds',
+    method: 'delete',
+    params: { ids }
+  })
+}

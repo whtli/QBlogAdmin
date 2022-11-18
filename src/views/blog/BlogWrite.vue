@@ -44,13 +44,13 @@ export default {
         firstPicture: '',
         description: '',
         content: '',
-        isPublished: false,
-        isCommentEnabled: false,
+        published: true,
+        commentEnabled: false,
         views: 0,
         words: null,
         readTime: null,
         categoryId: null,
-        isTop: false,
+        top: false,
         password: ''
       },
       rules: {
