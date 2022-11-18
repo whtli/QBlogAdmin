@@ -10,7 +10,7 @@
         </el-form-item>
         <el-form-item label="正文" prop="content">
           <br>
-          <mavon-editor ref="md" v-model="blogForm.content" :html="false" @imgAdd="imgAdd" @imgDel="imgDel" @save="contentSave" />
+          <mavon-editor ref="md" v-model="blogForm.content" @imgAdd="imgAdd" @imgDel="imgDel" @save="contentSave" />
         </el-form-item>
         <el-form-item label="字数" prop="words">
           <el-input v-model="blogForm.words" />
