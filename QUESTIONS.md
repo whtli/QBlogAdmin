@@ -636,7 +636,7 @@ Navbar.vue，退出时提示鉴权失败（后端有问题） ==> 没打开本�
     })
   }
   ```
-  
+
 ## 7. 添加echarts
 ### 7.1 以饼状图为例的简单图表
 + 新建vue组件并将其添加到路由文件[index.js](./src/router/index.js)中
@@ -787,3 +787,95 @@ Navbar.vue，退出时提示鉴权失败（后端有问题） ==> 没打开本�
 3. series not exists. Legend data should be same with series name or data name.
 
     避坑：echarts的饼图，一定使用跟官网示例中使用的属性名，如饼图中series的data属性需要用的是的name和value，后端传过来的也一定是有name和value的VO才能正确地将图绘制出来
+
+## 8. 完成批量删除和列表界面和博客列表界面的功能键
+### 8.1 批量删除
++ 关键在于表格绑定的 @selection-change="handleSelectionChange" 事件，这个事件可以拿到选框选中的值。
++ 然后在通过 map() 方法循环遍历拿到对应的id值，将拿到的id值赋值给后台需要的ids参数，最后将其传递给后台即可。
+
++ 在[BlogList.vue](./src/views/blog/BlogList.vue)组件中添加表格复选框、选中的值对应的数据和功能函数
+  ```vue
+      <div style="margin: 10px 0; margin-left: 1%">
+        <el-button type="danger" @click="deleteBlogBatch"><i class="el-icon-remove-outline"></i> 批量删除</el-button>
+      </div>
+      <div style="margin: 10px 0; margin-left: 1%">
+        // 为了实现复选信息的获取，需要在el-table中绑定selection-change，当选择项发生变化时会触发该事件
+        <el-table :data="blogList" border :stripe="true" :height="660" @selection-change="handleSelectionChange">
+          // 安装element官网提示，实现多选只需要手动添加一个el-table-column，设type属性为selection即可
+          <el-table-column type="selection" width="55"> </el-table-column>
+        </el-table>
+      </div>
+  ```
+  ```javascript
+  <script>
+  // 引入批量删除的接口deleteBlogBatchByIds
+  import { getBlogs, deleteBlogById, deleteBlogBatchByIds } from '@/api/blog/BlogList'
+  
+  export default {
+    name: 'BlogList',
+    data() {
+      return {
+        blogList: [], // 表格数据
+        selected: [], // 复选框选中的值列表
+      }
+    },
+    methods: {
+      // 获取选中的值
+      handleSelectionChange(selected) {
+        this.selected = selected
+        console.log('选中的值', selected.map((item) => item.id))
+      },
+      // 根据id批量删除博客
+      deleteBlogBatch() {
+        const ids = this.selected.map(item => item.id).join()
+        /* 根据后台想要的参数格式选择
+        console.log(ids.join(",")); // string:1,2,3,4
+        console.log(ids); // object:[1,2,3,4]
+        */
+        this.$confirm('此操作将永久删除所选的博客，是否删除?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+          dangerouslyUseHTMLString: true
+        }).then(() => {
+          deleteBlogBatchByIds(ids).then(response => {
+            this.$message.success(response.data.message + '，ID为： ' + ids)
+            this.getBlogList()
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消批量删除操作'
+          })
+        })
+      },
+      // 查询博客列表
+      getBlogList() {
+        getBlogs(this.queryInfo).then(res => {
+        this.blogList = res.data.data.pageData.records
+        this.total = res.data.data.total
+        })
+      }
+    }
+  }
+  </script>
+  ```
+
++ 在[BlogList.js](./src/api/blog/BlogList.js)中定义批量删除的接口
+  ```javascript
+  export function deleteBlogBatchByIds(ids) {
+    return request({
+      url: '/blog/deleteBlogBatchByIds',
+      method: 'delete',
+      params: { ids }
+    })
+  }
+  ```
+  
+### 8.2 ”新增博客“的功能键
++ 在按钮中添加不带参数的跳转路由即可，见[BlogList.vue](./src/views/blog/BlogList.vue)
+  ```vue
+      <div style="margin: 10px 0; margin-left: 1%">
+        <el-button type="primary"><i class="el-icon-circle-plus-outline"></i> <router-link :to="{ name: 'BlogWrite'}">新增</router-link></el-button>
+      </div>
+  ```
