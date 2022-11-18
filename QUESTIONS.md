@@ -873,9 +873,176 @@ Navbar.vue，退出时提示鉴权失败（后端有问题） ==> 没打开本�
   ```
   
 ### 8.2 ”新增博客“的功能键
-+ 在按钮中添加不带参数的跳转路由即可，见[BlogList.vue](./src/views/blog/BlogList.vue)
++ 两种办法可以跳转，但是最终选择第二种，因为第一种在博客列表界面发生其他路由跳转（如编辑）之后，再回来经常失效，需要刷新界面才能重新起作用，见[BlogList.vue](./src/views/blog/BlogList.vue)
+  - （1）在按钮中添加不带参数的跳转路由即可，
+    ```vue
+        <div style="margin: 10px 0; margin-left: 1%">
+          <el-button type="primary"><i class="el-icon-circle-plus-outline"></i> <router-link :to="{ name: 'BlogWrite'}">新增</router-link></el-button>
+        </div>
+    ```
+  - （2）在button上点击事件，然后从事件中跳转
   ```vue
-      <div style="margin: 10px 0; margin-left: 1%">
-        <el-button type="primary"><i class="el-icon-circle-plus-outline"></i> <router-link :to="{ name: 'BlogWrite'}">新增</router-link></el-button>
+    <div style="margin: 10px 0; margin-left: 1%">
+      <el-button type="primary" @click="toBlogWritePage"><i class="el-icon-circle-plus-outline"></i> 新增</el-button>
+    </div>
+  ```
+  ```javascript
+    // 新增博客，跳转到写博客界面
+    toBlogWritePage() {
+      this.$router.push(`/blog/write`)
+    }
+  ```
+  
+### 8.3 ”阅读博客“的功能键
++ 在按钮上添加点击事件，并把被选择的博客id作为参数传递下去，见[BlogList.vue](./src/views/blog/BlogList.vue)
+  ```vue
+          <el-table-column label="操作">
+            <template v-slot="scope">
+              <el-button type="primary" @click="readBlog(scope.row.id)"><i class="el-icon-view"> </i> 查看</el-button>
+            </template>
+          </el-table-column>
+  ```
++ 新增一个命名[BlogRead.vue](./src/views/blog/BlogRead.vue)的组件
+  - 精简其界面内容，只做展示，充分利用mavon-editor的参数
+  - 参数使用，参考自[mavon-editor官方的参数解释](https://github.com/hinesboy/mavonEditor#props)：
+    - :subfield="false" : true： 双栏(编辑预览同屏)， false： 单栏(编辑预览分屏)
+    - :defaultOpen="'preview'" : 在单栏（subfield=false）时默认展示区域. edit： 默认展示编辑区域，preview： 默认展示预览区域，其他 = edit
+    - :editable="false" : 是否允许编辑. true：允许，false：不允许
+    - :code-style="'a11y-dark'" : markdown样式： 默认github, 可选[配色方案](https://github.com/hinesboy/mavonEditor/blob/master/src/lib/core/hljs/lang.hljs.css.js)
+    - :toolbarsFlag="false" : 工具栏是否显示. true：显示，false：不显示
+  - 详细内容见[BlogRead.vue](./src/views/blog/BlogRead.vue)
+  ```vue
+  <template>
+    <div>
+      <div id="main" style="margin-left: 10%; margin-right: 10%">
+        <el-form ref="blogForm" :model="blogForm" >
+          <el-form-item label="标题" prop="title">
+            <el-input v-model="blogForm.title" readonly/>
+          </el-form-item>
+          <el-form-item>
+            <el-col :span="11" style="margin-right: 10px">
+              <el-form-item label="字数">
+                <el-input readonly v-model="blogForm.words" style="width: 100%;"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="11">
+              <el-form-item label="阅读量" >
+                <el-input readonly v-model="blogForm.views" style="width: 100%;"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-form-item>
+          <el-form-item label="描述" prop="description">
+            <el-input v-model="blogForm.description" type="textarea" readonly/>
+          </el-form-item>
+          <el-form-item label="正文" prop="content">
+            <br>
+            <mavon-editor ref="md" v-model="blogForm.content" :subfield="false" :defaultOpen="'preview'" :editable="false" :code-style="'a11y-dark'" :toolbarsFlag="false" />
+          </el-form-item>
+        </el-form>
       </div>
+    </div>
+  </template>
+  ```
+  ```javascript
+  
+  <script>
+  import { getBlogById } from '@/api/blog/BlogWrite'
+  
+  export default {
+    name: 'BlogRead',
+    data() {
+      return {
+        blogForm: {
+          id: '',
+          title: '',
+          firstPicture: '',
+          description: '',
+          content: '',
+          published: true,
+          commentEnabled: false,
+          views: 0,
+          words: null,
+          readTime: null,
+          categoryId: null,
+          top: false,
+          password: ''
+        }
+      }
+    },
+    created() {
+      // 当界面被创建时，监听是否有路由参数
+      // 若有说明是修改指定博客，此时需要先查询并显示
+      // 若无说明是新增博客
+      if (this.$route.params.id) {
+        this.getBlog(this.$route.params.id)
+      }
+    },
+    methods: {
+      // 根据id查询唯一的博客
+      getBlog(id) {
+        getBlogById(id).then(res => {
+          // 把查询结果赋值给this.blogList，使其显示到编辑界面上
+          this.blogForm = res.data.data
+        }).catch(() => {
+          this.$message({
+            type: 'warning',
+            message: '获取文博客失败，请重试'
+          })
+        })
+      }
+    }
+  }
+  </script>
+  
+  <style scoped>
+  
+  </style>
+  
+  ```
+
++ 在[router/index](./src/router/index.js)文件中为新界面添加路由
+```javascript
+  {
+    path: '/blog',
+    component: Layout,
+    redirect: '/blog/list',
+    name: 'Blog',
+    meta: { title: 'Blog Management', icon: 'nested' },
+    children: [
+      {
+        path: 'list',
+        name: 'BlogList',
+        component: () => import('@/views/blog/BlogList'),
+        meta: { title: 'BlogList', icon: 'table' }
+      },
+      {
+        path: 'write',
+        name: 'BlogWrite',
+        component: () => import('@/views/blog/BlogWrite'),
+        meta: { title: 'BlogWrite', icon: 'tree' }
+      },
+      {
+        path: 'edit/:id',
+        name: 'BlogEdit',
+        component: () => import('@/views/blog/BlogWrite'),
+        meta: { title: 'BlogEdit', icon: 'el-icon-edit' },
+        hidden: true
+      },
+      // 新节目的路由
+      {
+        path: 'read/:id',
+        name: 'BlogRead',
+        component: () => import('@/views/blog/BlogRead'),
+        meta: { title: 'BlogRead' },
+        hidden: true
+      }
+    ]
+  },
+```
++ 在[BlogList.vue](./src/views/blog/BlogList.vue)中的响应函数中做出跳转
+  ```javascript
+    // 阅读指定id的文章
+    readBlog(id) {
+      this.$router.push(`/blog/read/${id}`)
+    }
   ```
