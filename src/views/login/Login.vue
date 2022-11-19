@@ -40,8 +40,10 @@
           <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
         </span>
       </el-form-item>
-
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
+      <div style="margin: 10px 0; text-align: right">
+        <el-button :loading="loading" type="primary" @click.native.prevent="handleLogin">Sign In</el-button>
+<!--        <el-button :loading="loading" type="warning" @click.native.prevent="handleLogin">Sign Up</el-button>-->
+      </div>
 
 <!--
       <div class="tips">
@@ -157,8 +159,8 @@ $cursor: #fff;
 .login-container {
   .el-input {
     display: inline-block;
-    height: 47px;
-    width: 85%;
+    height: 40px;
+    width: 80%;
 
     input {
       background: transparent;
@@ -166,8 +168,8 @@ $cursor: #fff;
       -webkit-appearance: none;
       border-radius: 0px;
       padding: 12px 5px 12px 15px;
-      color: $light_gray;
-      height: 47px;
+      color: $bg;
+      height: 40px;
       caret-color: $cursor;
 
       &:-webkit-autofill {
@@ -195,15 +197,23 @@ $light_gray:#eee;
   min-height: 100%;
   width: 100%;
   background-color: $bg;
+  //background-image: linear-gradient(to bottom right, #FC466B, #3F5EFB);
   overflow: hidden;
 
   .login-form {
     position: relative;
-    width: 520px;
+    // width: 520px;
     max-width: 100%;
-    padding: 160px 35px 0;
-    margin: 0 auto;
+    // padding: 160px 35px 0;
+    // margin: 0 auto;
     overflow: hidden;
+
+    margin: 200px auto;
+    background-color: white;
+    width: 400px;
+    height: 320px;
+    padding: 20px;
+    border-radius: 10px;
   }
 
 /*  .tips {
@@ -231,8 +241,9 @@ $light_gray:#eee;
 
     .title {
       font-size: 26px;
-      color: $light_gray;
-      margin: 0px auto 40px auto;
+      //color: $light_gray;
+      color: $bg;
+      margin: 20px auto 30px auto;
       text-align: center;
       font-weight: bold;
     }
