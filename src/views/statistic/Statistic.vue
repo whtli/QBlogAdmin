@@ -45,22 +45,26 @@ export default {
             data: [],
             // 饼图图形上的文本标签
             label: {
-              normal: {
-                show: true,
-                position: 'inner', // 标签的位置
-                textStyle: {
-                  fontWeight: 300,
-                  fontSize: 12, // 文字的字体大小
-                  color: '#fff'
-                },
-                formatter: '{d}%'
-              }
+              show: true,
+              position: 'inner', // 标签的位置
+              fontWeight: 300,
+              fontSize: 12, // 文字的字体大小
+              color: '#000',
+              formatter: '{d}%'
             }
           }
         ]
       },
       blogMonthly: null,
       blogMonthlyOption: {
+        title: {
+          text: 'Statistical Data II',
+          subtext: 'blog',
+          left: 'center'
+        },
+        tooltip: {
+          trigger: 'axis'
+        },
         xAxis: {
           type: 'category',
           data: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']
@@ -103,8 +107,6 @@ export default {
         // 圆滑折线图柱图
         this.blogMonthlyOption.series[0].data = response.data.data.blogMonthlyList
         this.blogMonthlyOption.series[1].data = response.data.data.blogMonthlyList
-        console.log(this.blogMonthlyOption)
-        console.log(response.data.data.blogMonthlyList)
         this.blogMonthly = echarts.init(this.$refs.blogMonthly)
         this.blogMonthly.setOption(this.blogMonthlyOption)
       })
