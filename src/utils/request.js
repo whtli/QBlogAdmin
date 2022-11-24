@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
+import router from '@/router/index'
 import { getToken } from '@/utils/auth'
 
 // create an axios instance
@@ -20,7 +21,12 @@ service.interceptors.request.use(
       // please modify it according to the actual situation
       config.headers['X-Token'] = getToken()
     }*/
-    if (store.state.token) {
+    /* if (store.state.token) {
+      config.headers['Authorization'] = localStorage.getItem('token') // 让每个请求携带自定义token 请根据实际情况自行修改
+      console.log(config)
+    }*/
+
+    if (localStorage.getItem('token')) {
       config.headers['Authorization'] = localStorage.getItem('token') // 让每个请求携带自定义token 请根据实际情况自行修改
       console.log(config)
     }
@@ -55,6 +61,9 @@ service.interceptors.response.use(
         type: 'error',
         duration: 5 * 1000
       })
+      if (res.code === 401) {
+        router.push('Login')
+      }
       // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
       if (res.code === 508 || res.code === 512 || res.code === 514) {
         // to re-login

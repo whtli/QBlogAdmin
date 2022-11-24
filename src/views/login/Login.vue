@@ -116,12 +116,12 @@ export default {
           this.loading = true
           // 提交逻辑
           login(this.loginForm).then(res => {
-            console.log(res)
+            // console.log(res)
             const token = res.headers['authorization']
-            console.log('token : ' + token)
+            // console.log('token : ' + token)
             const userInfo = res.data.data
-            console.log('userInfo : ')
-            console.log(userInfo)
+            // console.log('userInfo : ')
+            // console.log(userInfo)
             // 把数据共享出去
             this.$store.commit('SET_TOKEN', token)
             this.$store.commit('SET_USERINFO', userInfo)

@@ -9,8 +9,8 @@
     <div style="margin: 10px 0; margin-left: 1%">
       <el-button type="primary" @click="toBlogWritePage"><i class="el-icon-circle-plus-outline"></i> 新增</el-button>
       <el-button type="danger" @click="deleteBlogBatch"><i class="el-icon-remove-outline"></i> 批量删除</el-button>
-<!--      <el-button type="primary"><i class="el-icon-bottom"></i> 导入</el-button>-->
-<!--      <el-button type="primary"><i class="el-icon-top"></i> 导出</el-button>-->
+      <el-button type="primary"><i class="el-icon-top"></i> 导入</el-button>
+      <el-button type="primary"><i class="el-icon-bottom"></i> 导出</el-button>
     </div>
     <div style="margin: 10px 0; margin-left: 1%">
       <el-table :data="blogList" border :stripe="true" :height="660" :header-cell-class-name="tableHeaderColor"  @selection-change="handleSelectionChange">
