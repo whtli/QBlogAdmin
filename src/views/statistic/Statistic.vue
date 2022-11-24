@@ -1,9 +1,14 @@
 <template>
   <div>
     <el-row class="panel-group" :gutter="20">
-      <el-col :span="8">
+      <el-col :span="12">
         <el-card>
-          <div ref="categoryEcharts" style="height:500px;"></div>
+          <div ref="blogCategory" style="height:300px;"></div>
+        </el-card>
+      </el-col>
+      <el-col :span="12">
+        <el-card>
+          <div ref="blogMonthly" style="height: 300px"></div>
         </el-card>
       </el-col>
     </el-row>
@@ -18,8 +23,8 @@ export default {
   name: 'Statistic',
   data() {
     return {
-      categoryEcharts: null,
-      categoryOption: {
+      blogCategory: null,
+      blogCategoryOption: {
         title: {
           text: 'Statistical Data I',
           subtext: 'blog',
@@ -37,13 +42,53 @@ export default {
             name: '数量',
             type: 'pie',
             radius: '50%',
-            roseType: 'area',
-            data: []
+            data: [],
+            // 饼图图形上的文本标签
+            label: {
+              normal: {
+                show: true,
+                position: 'inner', // 标签的位置
+                textStyle: {
+                  fontWeight: 300,
+                  fontSize: 12, // 文字的字体大小
+                  color: '#fff'
+                },
+                formatter: '{d}%'
+              }
+            }
+          }
+        ]
+      },
+      blogMonthly: null,
+      blogMonthlyOption: {
+        xAxis: {
+          type: 'category',
+          data: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']
+        },
+        yAxis: {
+          type: 'value'
+        },
+        series: [
+          {
+            data: [],
+            type: 'line',
+            smooth: true
+          },
+          {
+            data: [],
+            type: 'bar',
+            smooth: true,
+            label: {
+              show: true,
+              position: 'top',
+              valueAnimation: true
+            }
           }
         ]
       }
     }
   },
+  // 页面元素渲染之后再触发
   mounted() {
     // 进入界面后自动刷新统计数据
     this.refresh()
@@ -51,9 +96,17 @@ export default {
   methods: {
     refresh() {
       getStatistic().then(response => {
-        this.categoryOption.series[0].data = response.data.data.blogCountList
-        this.categoryEcharts = echarts.init(this.$refs.categoryEcharts, 'light')
-        this.categoryEcharts.setOption(this.categoryOption)
+        // 饼图
+        this.blogCategoryOption.series[0].data = response.data.data.blogCategoryList
+        this.blogCategory = echarts.init(this.$refs.blogCategory)
+        this.blogCategory.setOption(this.blogCategoryOption)
+        // 圆滑折线图柱图
+        this.blogMonthlyOption.series[0].data = response.data.data.blogMonthlyList
+        this.blogMonthlyOption.series[1].data = response.data.data.blogMonthlyList
+        console.log(this.blogMonthlyOption)
+        console.log(response.data.data.blogMonthlyList)
+        this.blogMonthly = echarts.init(this.$refs.blogMonthly)
+        this.blogMonthly.setOption(this.blogMonthlyOption)
       })
     }
   }
