@@ -3,12 +3,19 @@
     <el-row class="panel-group" :gutter="20">
       <el-col :span="12">
         <el-card>
-          <div ref="blogCategory" style="height:300px;"></div>
+          <div ref="blogYear" style="height:300px;"></div>
         </el-card>
       </el-col>
       <el-col :span="12">
         <el-card>
-          <div ref="blogMonthly" style="height: 300px"></div>
+          <div ref="blogMonth" style="height: 300px"></div>
+        </el-card>
+      </el-col>
+    </el-row>
+    <el-row class="panel-group" :gutter="20">
+      <el-col :span="12">
+        <el-card>
+          <div ref="blogCategory" style="height:300px;"></div>
         </el-card>
       </el-col>
     </el-row>
@@ -27,7 +34,7 @@ export default {
       blogCategoryOption: {
         title: {
           text: 'Statistical Data I',
-          subtext: 'blog',
+          subtext: '不同分类下博客数量',
           left: 'center'
         },
         tooltip: {
@@ -55,21 +62,60 @@ export default {
           }
         ]
       },
-      blogMonthly: null,
-      blogMonthlyOption: {
+      blogYear: null,
+      blogYearOption: {
         title: {
-          text: 'Statistical Data II',
-          subtext: 'blog',
+          text: 'Statistical Data I',
+          subtext: '各年份发表博客数量',
           left: 'center'
         },
         tooltip: {
           trigger: 'axis'
         },
         xAxis: {
+          name: '年',
+          type: 'category',
+          data: []
+        },
+        yAxis: {
+          name: '数量（篇）',
+          type: 'value'
+        },
+        series: [
+          {
+            data: [],
+            type: 'line',
+            smooth: true
+          },
+          {
+            data: [],
+            type: 'bar',
+            smooth: true,
+            label: {
+              show: true,
+              position: 'top',
+              valueAnimation: true
+            }
+          }
+        ]
+      },
+      blogMonth: null,
+      blogMonthOption: {
+        title: {
+          text: 'Statistical Data II',
+          subtext: '当年各月份发表博客数量',
+          left: 'center'
+        },
+        tooltip: {
+          trigger: 'axis'
+        },
+        xAxis: {
+          name: '月份',
           type: 'category',
           data: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']
         },
         yAxis: {
+          name: '数量（篇）',
           type: 'value'
         },
         series: [
@@ -100,15 +146,21 @@ export default {
   methods: {
     refresh() {
       getStatistic().then(response => {
-        // 饼图
+        // 不同分类下博客数量，饼图
         this.blogCategoryOption.series[0].data = response.data.data.blogCategoryList
         this.blogCategory = echarts.init(this.$refs.blogCategory)
         this.blogCategory.setOption(this.blogCategoryOption)
-        // 圆滑折线图柱图
-        this.blogMonthlyOption.series[0].data = response.data.data.blogMonthlyList
-        this.blogMonthlyOption.series[1].data = response.data.data.blogMonthlyList
-        this.blogMonthly = echarts.init(this.$refs.blogMonthly)
-        this.blogMonthly.setOption(this.blogMonthlyOption)
+        // 各年份发表博客数量，柱状图
+        this.blogYearOption.xAxis.data = Object.keys(response.data.data.blogYearCount)
+        this.blogYearOption.series[0].data = Object.values(response.data.data.blogYearCount)
+        this.blogYearOption.series[1].data = Object.values(response.data.data.blogYearCount)
+        this.blogYear = echarts.init(this.$refs.blogYear)
+        this.blogYear.setOption(this.blogYearOption)
+        // 当年各月份发表博客数量，圆滑折线柱状图
+        this.blogMonthOption.series[0].data = response.data.data.blogMonthList
+        this.blogMonthOption.series[1].data = response.data.data.blogMonthList
+        this.blogMonth = echarts.init(this.$refs.blogMonth)
+        this.blogMonth.setOption(this.blogMonthOption)
       })
     }
   }

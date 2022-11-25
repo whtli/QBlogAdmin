@@ -2,26 +2,21 @@
   <div>
     <div id="main" style="margin-left: 10%; margin-right: 10%">
       <el-form ref="blogForm" :model="blogForm" >
-        <el-form-item label="标题" prop="title">
-          <el-input v-model="blogForm.title" readonly/>
+        <el-form-item prop="title" style="text-align: center">
+          <h1>{{ blogForm.title }}</h1>
         </el-form-item>
-        <el-form-item>
-          <el-col :span="11" style="margin-right: 10px">
-            <el-form-item label="字数">
-              <el-input readonly v-model="blogForm.words" style="width: 100%;"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="11">
-            <el-form-item label="阅读量" >
-              <el-input readonly v-model="blogForm.views" style="width: 100%;"></el-input>
-            </el-form-item>
-          </el-col>
+        <el-form-item class="m-padded-tb-small">
+          <div class="m-center">
+            <i class="el-icon-date m-datetime"><span> 发布时间：{{ blogForm.createTime }}</span></i>
+            <i class="el-icon-view m-views"><span> 阅读量：{{ blogForm.views }}</span></i>
+            <i class="el-icon-document m-words"><span> 字数：{{ blogForm.words }}</span></i>
+            <i class="el-icon-timer m-read-time"><span> 阅读时长：{{ blogForm.readTime }} 分钟</span></i>
+          </div>
         </el-form-item>
-        <el-form-item label="描述" prop="description">
+        <!--<el-form-item label="描述" prop="description">
           <el-input v-model="blogForm.description" type="textarea" readonly/>
-        </el-form-item>
-        <el-form-item label="正文" prop="content">
-          <br>
+        </el-form-item>-->
+        <el-form-item prop="content">
           <mavon-editor ref="md" v-model="blogForm.content" :subfield="false" :defaultOpen="'preview'" :editable="false" :code-style="'a11y-dark'" :toolbarsFlag="false" />
         </el-form-item>
       </el-form>
@@ -42,6 +37,8 @@ export default {
         firstPicture: '',
         description: '',
         content: '',
+        createTime: null,
+        updateTime: null,
         published: true,
         commentEnabled: false,
         views: 0,
@@ -67,6 +64,8 @@ export default {
       getBlogById(id).then(res => {
         // 把查询结果赋值给this.blogList，使其显示到编辑界面上
         this.blogForm = res.data.data
+        const createTime = this.blogForm.createTime.substring(0, 19).replace('T', ' ')
+        this.blogForm.createTime = createTime
       }).catch(() => {
         this.$message({
           type: 'warning',
@@ -97,5 +96,41 @@ export default {
 /** el-input 正常模式下、readonly模式下的文字颜色 */
 .el-input__inner{
   color:#00ccff;
+}
+
+.m-padded-tb-small {
+  padding-top: 0.5em !important;
+  padding-bottom: 0.5em !important;
+}
+
+.m-center {
+  width: 70%;
+  margin: auto !important;
+  display: flex;
+  justify-content: space-around;
+}
+
+.m-datetime {
+  color: #00a7e0 !important;
+  size: 16px;
+  font-size: 16px;
+}
+
+.m-views {
+  color: #ff3f1f !important;
+  size: 16px;
+  font-size: 16px;
+}
+
+.m-words {
+  color: #000 !important;
+  size: 16px;
+  font-size: 16px;
+}
+
+.m-read-time {
+  color: #B35B4B !important;
+  size: 16px;
+  font-size: 16px;
 }
 </style>

@@ -15,7 +15,7 @@
     <div style="margin: 10px 0; margin-left: 1%">
       <el-table :data="blogList" border :stripe="true" :height="660" :header-cell-class-name="tableHeaderColor"  @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55"> </el-table-column>
-        <el-table-column label="序号" prop="id" width="50"> </el-table-column>
+        <!--<el-table-column label="序号" prop="id" width="50"> </el-table-column>-->
         <el-table-column label="标题" prop="title" width="100"> </el-table-column>
         <el-table-column label="描述" prop="description" width="200"> </el-table-column>
         <el-table-column label="公开" prop="published" width="60"><template v-slot="scope">

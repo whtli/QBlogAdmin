@@ -3,21 +3,21 @@
     <div id="main">
       <el-form ref="blogForm" :model="blogForm" :rules="rules" style="margin-left: 30px; margin-right: 30px">
         <el-form-item label="标题" prop="title">
-          <el-input v-model="blogForm.title" />
+          <el-input v-model="blogForm.title"></el-input>
         </el-form-item>
         <el-form-item label="描述" prop="description">
-          <el-input v-model="blogForm.description" type="textarea" />
+          <el-input v-model="blogForm.description" type="textarea"></el-input>
         </el-form-item>
         <el-form-item label="正文" prop="content">
           <br>
           <mavon-editor ref="md" v-model="blogForm.content" @imgAdd="imgAdd" @imgDel="imgDel" @save="contentSave" />
         </el-form-item>
-        <el-form-item label="字数" prop="words">
+        <!--<el-form-item label="字数" prop="words">
           <el-input v-model="blogForm.words" />
         </el-form-item>
         <el-form-item label="浏览次数" prop="words">
           <el-input v-model="blogForm.views" />
-        </el-form-item>
+        </el-form-item>-->
         <el-form-item>
           <el-button type="primary" @click="blogSubmit">
             发布
@@ -56,10 +56,11 @@ export default {
       rules: {
         title: [
           { required: true, message: '请输入标题', trigger: 'blur' },
-          { min: 3, max: 10, message: '长度在3到10个字符', trigger: 'blur' }
+          { min: 3, max: 50, message: '长度在3到50个字符', trigger: 'blur' }
         ],
         description: [
-          { required: true, message: '请输入摘要', trigger: 'blur' }
+          { required: true, message: '请输入摘要', trigger: 'blur' },
+          { min: 3, max: 50, message: '长度在3到50个字符', trigger: 'blur' }
         ],
         content: [
           { required: true, message: '请输入正文', trigger: 'blur' }
