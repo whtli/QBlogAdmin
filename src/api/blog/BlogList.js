@@ -23,3 +23,12 @@ export function deleteBlogBatchByIds(ids) {
     params: { ids }
   })
 }
+
+export function uploadBlog(blogFiles) {
+  return request({
+    url: '/blog/uploadBlog',
+    method: 'post',
+    header: { 'Content-Type': 'multipart/form-data' },
+    data: blogFiles
+  })
+}

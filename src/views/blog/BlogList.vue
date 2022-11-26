@@ -6,11 +6,22 @@
       <el-button @click.native.prevent="getBlogList" style="margin-left: 5px" type="primary">查询</el-button>
 <!--      <el-button @click.native.prevent="getBlogList" style="margin-left: 5px" type="primary">刷新列表</el-button>-->
     </div>
-    <div style="margin: 10px 0; margin-left: 1%">
-      <el-button type="primary" @click="toBlogWritePage"><i class="el-icon-circle-plus-outline"></i> 新增</el-button>
-      <el-button type="danger" @click="deleteBlogBatch"><i class="el-icon-remove-outline"></i> 批量删除</el-button>
-      <el-button type="primary"><i class="el-icon-top"></i> 导入</el-button>
-      <el-button type="primary"><i class="el-icon-bottom"></i> 导出</el-button>
+    <div style="margin-left: 10px; width: 36%; display: flex; justify-content: space-between ">
+      <div>
+        <el-button type="primary" @click="toBlogWritePage"><i class="el-icon-circle-plus-outline"></i> 新增</el-button>
+      </div>
+      <div>
+        <el-button type="danger" @click="deleteBlogBatch"><i class="el-icon-remove-outline"></i> 批量删除</el-button>
+      </div>
+      <div>
+        <el-upload action :http-request="importBlog" :limit="fileLimit" :before-upload="beforeUpload" :on-exceed="handleExceed" :show-file-list="false">
+          <el-button type="primary"><i class="el-icon-top"></i> 导入</el-button>
+        </el-upload>
+      </div>
+      <div>
+        <el-button type="primary"><i class="el-icon-bottom"></i> 导出</el-button>
+      </div>
+
     </div>
     <div style="margin: 10px 0; margin-left: 1%">
       <el-table :data="blogList" border :stripe="true" :height="660" :header-cell-class-name="tableHeaderColor"  @selection-change="handleSelectionChange">
@@ -53,7 +64,7 @@
 </template>
 
 <script>
-import { getBlogs, deleteBlogById, deleteBlogBatchByIds } from '@/api/blog/BlogList'
+import { getBlogs, deleteBlogById, deleteBlogBatchByIds, uploadBlog } from '@/api/blog/BlogList'
 
 export default {
   name: 'BlogList',
@@ -67,8 +78,15 @@ export default {
       },
       total: 0,
       blogList: [],
-      selected: [], // 复选框选中的值列表
-      tableHeaderColor: 'tableHeaderColor'
+      // 复选框选中的值列表
+      selected: [],
+      tableHeaderColor: 'tableHeaderColor',
+      // 允许上传的博客文件类型
+      fileType: ['md'],
+      // 运行上传文件大小，单位 M
+      fileSize: 1,
+      // 待导入博客文件数量限制
+      fileLimit: 1
     }
   },
   watch: {
@@ -101,7 +119,7 @@ export default {
     // 获取选中的值
     handleSelectionChange(selected) {
       this.selected = selected
-      console.log('选中的值', selected.map((item) => item.id))
+      // console.log('选中的值', selected.map((item) => item.id))
     },
     // 查询博客列表
     getBlogList() {
@@ -126,7 +144,7 @@ export default {
         confirmButtonText: '确定',
         callback: action => {
           this.$router.push(`/blog/edit/${id}`)
-          console.log(action)
+          // console.log(action)
         }
       })
     },
@@ -172,6 +190,47 @@ export default {
           message: '已取消批量删除操作'
         })
       })
+    },
+    // 上传博客之前
+    beforeUpload(file) {
+      if (file.type !== '' || file.type != null || file.type !== undefined) {
+        // 计算文件的大小
+        const fileSize = file.size / 1024 / 1024
+        // 这里做文件大小限制
+        if (fileSize > this.fileSize) {
+          this.$message('上传文件大小不能超过 1MB!')
+          return false
+        }
+        // 截取文件的后缀，判断文件类型
+        const FileExt = file.name.replace(/.+\./, '').toLowerCase()
+        // 如果文件类型不在允许上传的范围内
+        if (this.fileType.includes(FileExt)) {
+          return true
+        } else {
+          this.$message.error('博客文件类型应为.md文件!')
+          return false
+        }
+      }
+    },
+    // 超出文件个数的回调
+    handleExceed(files) {
+      this.$message.warning(`超出上传数量限制！最多上传 ${this.fileLimit} 个博客文件，选择了 ${files.length} 个博客文件`)
+    },
+    // 上传文件的事件
+    importBlog(item) {
+      this.$message('博客上传中······')
+      // 上传文件的需要formdata类型
+      const FormDatas = new FormData()
+      FormDatas.append('file', item.file)
+      uploadBlog(FormDatas).then(res => {
+        this.$message(res.data.message)
+        // 成功过后刷新列表，清空上传文件列表
+        this.handleSuccess()
+      })
+    },
+    // 上传成功后的回调
+    handleSuccess() {
+      this.getBlogList()
     }
   },
   mounted() {

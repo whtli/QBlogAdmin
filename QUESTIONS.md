@@ -1046,3 +1046,496 @@ Navbar.vue，退出时提示鉴权失败（后端有问题） ==> 没打开本�
       this.$router.push(`/blog/read/${id}`)
     }
   ```
+
+## 9. 调整布局，新增图表
+### 9.1 调整`博客列表`、`博客阅读`界面布局
++ [BlogList](src/views/blog/BlogList.vue)
+  ```vue
+      <div style="margin: 10px 0; margin-left: 1%">
+        <el-table :data="blogList" border :stripe="true" :height="660" :header-cell-class-name="tableHeaderColor"  @selection-change="handleSelectionChange">
+          <el-table-column type="selection" width="55"> </el-table-column>
+          <!--<el-table-column label="序号" prop="id" width="50"> </el-table-column>-->
+          <el-table-column label="标题" prop="title" width="100"> </el-table-column>
+          <el-table-column label="描述" prop="description" width="200"> </el-table-column>
+          <el-table-column label="公开" prop="published" width="60"><template v-slot="scope">
+            {{scope.row.published ? "公开":"隐藏"}}
+          </template> </el-table-column>
+          <el-table-column label="创建时间" prop="createTime" width="200"> </el-table-column>
+          <el-table-column label="更新时间" prop="updateTime" width="200"> </el-table-column>
+          <el-table-column label="浏览量" prop="views" width="60"> </el-table-column>
+          <el-table-column label="字数" prop="words" width="50"> </el-table-column>
+          <el-table-column label="分类" prop="categoryId" width="100"> </el-table-column>
+          <el-table-column label="作者" prop="userId" width="50"> </el-table-column>
+          <el-table-column label="操作">
+            <template v-slot="scope">
+              <el-button type="primary" @click="readBlog(scope.row.id)"><i class="el-icon-view"> </i> 查看</el-button>
+              <el-button type="success" @click="updateBlog(scope.row.id)"><i class="el-icon-edit"> </i> 编辑</el-button>
+              <el-button type="danger" @click="deleteBlog(scope.row.id)"><i class="el-icon-remove"></i> 删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+  ```
+
++ [BlogRead](src/views/blog/BlogRead.vue)
+  ```vue
+  <template>
+    <div>
+      <div id="main" style="margin-left: 10%; margin-right: 10%">
+        <el-form ref="blogForm" :model="blogForm" >
+          <el-form-item prop="title" style="text-align: center">
+            <h1>{{ blogForm.title }}</h1>
+          </el-form-item>
+          <el-form-item class="m-padded-tb-small">
+            <div class="m-center">
+              <i class="el-icon-date m-datetime"><span> 发布时间：{{ blogForm.createTime }}</span></i>
+              <i class="el-icon-view m-views"><span> 阅读量：{{ blogForm.views }}</span></i>
+              <i class="el-icon-document m-words"><span> 字数：{{ blogForm.words }}</span></i>
+              <i class="el-icon-timer m-read-time"><span> 阅读时长：{{ blogForm.readTime }} 分钟</span></i>
+            </div>
+          </el-form-item>
+          <!--<el-form-item label="描述" prop="description">
+            <el-input v-model="blogForm.description" type="textarea" readonly/>
+          </el-form-item>-->
+          <el-form-item prop="content">
+            <mavon-editor ref="md" v-model="blogForm.content" :subfield="false" :defaultOpen="'preview'" :editable="false" :code-style="'a11y-dark'" :toolbarsFlag="false" />
+          </el-form-item>
+        </el-form>
+      </div>
+    </div>
+  </template>
+  ```
+  
+  ```javascript
+  export default {
+    name: 'BlogRead',
+    data() {
+      return {
+        blogForm: {
+          id: '',
+          title: '',
+          firstPicture: '',
+          description: '',
+          content: '',
+          createTime: null,
+          updateTime: null,
+          published: true,
+          commentEnabled: false,
+          views: 0,
+          words: null,
+          readTime: null,
+          categoryId: null,
+          top: false,
+          password: ''
+        }
+      }
+    },
+    created() {
+      // 当界面被创建时，监听是否有路由参数
+      // 若有说明是修改指定博客，此时需要先查询并显示
+      // 若无说明是新增博客
+      if (this.$route.params.id) {
+        this.getBlog(this.$route.params.id)
+      }
+    },
+    methods: {
+      // 根据id查询唯一的博客
+      getBlog(id) {
+        getBlogById(id).then(res => {
+          // 把查询结果赋值给this.blogList，使其显示到编辑界面上
+          this.blogForm = res.data.data
+          const createTime = this.blogForm.createTime.substring(0, 19).replace('T', ' ')
+          this.blogForm.createTime = createTime
+        }).catch(() => {
+          this.$message({
+            type: 'warning',
+            message: '获取文博客失败，请重试'
+          })
+        })
+      }
+    }
+  }
+  </script>
+  ```
+  
+  ```css
+  .m-padded-tb-small {
+    padding-top: 0.5em !important;
+    padding-bottom: 0.5em !important;
+  }
+  
+  .m-center {
+    width: 70%;
+    margin: auto !important;
+    display: flex;
+    justify-content: space-around;
+  }
+  
+  .m-datetime {
+    color: #00a7e0 !important;
+    size: 16px;
+    font-size: 16px;
+  }
+  
+  .m-views {
+    color: #ff3f1f !important;
+    size: 16px;
+    font-size: 16px;
+  }
+  
+  .m-words {
+    color: #000 !important;
+    size: 16px;
+    font-size: 16px;
+  }
+  
+  .m-read-time {
+    color: #B35B4B !important;
+    size: 16px;
+    font-size: 16px;
+  }
+  ```
+
+### 9.2 调整`博客编辑`界面的输入要求
++ [BlogWrite](src/views/blog/BlogRead.vue)
+  ```vue
+  <template>
+    <div>
+      <div id="main">
+        <el-form ref="blogForm" :model="blogForm" :rules="rules" style="margin-left: 30px; margin-right: 30px">
+          <el-form-item label="标题" prop="title">
+            <el-input v-model="blogForm.title"></el-input>
+          </el-form-item>
+          <el-form-item label="描述" prop="description">
+            <el-input v-model="blogForm.description" type="textarea"></el-input>
+          </el-form-item>
+          <el-form-item label="正文" prop="content">
+            <br>
+            <mavon-editor ref="md" v-model="blogForm.content" @imgAdd="imgAdd" @imgDel="imgDel" @save="contentSave" />
+          </el-form-item>
+          <!--<el-form-item label="字数" prop="words">
+            <el-input v-model="blogForm.words" />
+          </el-form-item>
+          <el-form-item label="浏览次数" prop="words">
+            <el-input v-model="blogForm.views" />
+          </el-form-item>-->
+          <el-form-item>
+            <el-button type="primary" @click="blogSubmit">
+              发布
+            </el-button>
+            <el-button @click="blogReset">
+              重置
+            </el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </div>
+  </template>
+  ```
+  
+  ```javascript
+        rules: {
+          title: [
+            { required: true, message: '请输入标题', trigger: 'blur' },
+            { min: 3, max: 50, message: '长度在3到50个字符', trigger: 'blur' }
+          ],
+          description: [
+            { required: true, message: '请输入摘要', trigger: 'blur' },
+            { min: 3, max: 50, message: '长度在3到50个字符', trigger: 'blur' }
+          ],
+          content: [
+            { required: true, message: '请输入正文', trigger: 'blur' }
+          ]
+        }
+  ```
+
+### 9.3 调整`统计数据`界面，新增年份数据
++ [Statistic](src/views/statistic/Statistic.vue)
+  ```vue
+  <template>
+    <div>
+      <el-row class="panel-group" :gutter="20">
+        <el-col :span="12">
+          <el-card>
+            <div ref="blogYear" style="height:300px;"></div>
+          </el-card>
+        </el-col>
+        <el-col :span="12">
+          <el-card>
+            <div ref="blogMonth" style="height: 300px"></div>
+          </el-card>
+        </el-col>
+      </el-row>
+      <el-row class="panel-group" :gutter="20">
+        <el-col :span="12">
+          <el-card>
+            <div ref="blogCategory" style="height:300px;"></div>
+          </el-card>
+        </el-col>
+      </el-row>
+    </div>
+  </template>
+  
+  <script>
+  import * as echarts from 'echarts'
+  import { getStatistic } from '@/api/statistic/Statistic'
+  
+  export default {
+    name: 'Statistic',
+    data() {
+      return {
+        blogCategory: null,
+        blogCategoryOption: {
+          title: {
+            text: 'Statistical Data I',
+            subtext: '不同分类下博客数量',
+            left: 'center'
+          },
+          tooltip: {
+            trigger: 'item'
+          },
+          legend: {
+            left: 'center',
+            top: 'bottom'
+          },
+          series: [
+            {
+              name: '数量',
+              type: 'pie',
+              radius: '50%',
+              data: [],
+              // 饼图图形上的文本标签
+              label: {
+                show: true,
+                position: 'inner', // 标签的位置
+                fontWeight: 300,
+                fontSize: 12, // 文字的字体大小
+                color: '#000',
+                formatter: '{d}%'
+              }
+            }
+          ]
+        },
+        blogYear: null,
+        blogYearOption: {
+          title: {
+            text: 'Statistical Data I',
+            subtext: '各年份发表博客数量',
+            left: 'center'
+          },
+          tooltip: {
+            trigger: 'axis'
+          },
+          xAxis: {
+            name: '年',
+            type: 'category',
+            data: []
+          },
+          yAxis: {
+            name: '数量（篇）',
+            type: 'value'
+          },
+          series: [
+            {
+              data: [],
+              type: 'line',
+              smooth: true
+            },
+            {
+              data: [],
+              type: 'bar',
+              smooth: true,
+              label: {
+                show: true,
+                position: 'top',
+                valueAnimation: true
+              }
+            }
+          ]
+        },
+        blogMonth: null,
+        blogMonthOption: {
+          title: {
+            text: 'Statistical Data II',
+            subtext: '当年各月份发表博客数量',
+            left: 'center'
+          },
+          tooltip: {
+            trigger: 'axis'
+          },
+          xAxis: {
+            name: '月份',
+            type: 'category',
+            data: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']
+          },
+          yAxis: {
+            name: '数量（篇）',
+            type: 'value'
+          },
+          series: [
+            {
+              data: [],
+              type: 'line',
+              smooth: true
+            },
+            {
+              data: [],
+              type: 'bar',
+              smooth: true,
+              label: {
+                show: true,
+                position: 'top',
+                valueAnimation: true
+              }
+            }
+          ]
+        }
+      }
+    },
+    // 页面元素渲染之后再触发
+    mounted() {
+      // 进入界面后自动刷新统计数据
+      this.refresh()
+    },
+    methods: {
+      refresh() {
+        getStatistic().then(response => {
+          // 不同分类下博客数量，饼图
+          this.blogCategoryOption.series[0].data = response.data.data.blogCategoryList
+          this.blogCategory = echarts.init(this.$refs.blogCategory)
+          this.blogCategory.setOption(this.blogCategoryOption)
+          // 各年份发表博客数量，柱状图
+          this.blogYearOption.xAxis.data = Object.keys(response.data.data.blogYearCount)
+          this.blogYearOption.series[0].data = Object.values(response.data.data.blogYearCount)
+          this.blogYearOption.series[1].data = Object.values(response.data.data.blogYearCount)
+          this.blogYear = echarts.init(this.$refs.blogYear)
+          this.blogYear.setOption(this.blogYearOption)
+          // 当年各月份发表博客数量，圆滑折线柱状图
+          this.blogMonthOption.series[0].data = response.data.data.blogMonthList
+          this.blogMonthOption.series[1].data = response.data.data.blogMonthList
+          this.blogMonth = echarts.init(this.$refs.blogMonth)
+          this.blogMonth.setOption(this.blogMonthOption)
+        })
+      }
+    }
+  }
+  </script>
+  ```
+
+## 10. 添加导入博客功能
++ [BlogList](src/views/blog/BlogList.vue)
+  ```vue
+      <div style="margin-left: 10px; width: 36%; display: flex; justify-content: space-between ">
+        <div>
+          <el-button type="primary" @click="toBlogWritePage"><i class="el-icon-circle-plus-outline"></i> 新增</el-button>
+        </div>
+        <div>
+          <el-button type="danger" @click="deleteBlogBatch"><i class="el-icon-remove-outline"></i> 批量删除</el-button>
+        </div>
+        <div>
+          <el-upload action :http-request="importBlog" :limit="fileLimit" :before-upload="beforeUpload" :on-exceed="handleExceed" :show-file-list="false">
+            <el-button type="primary"><i class="el-icon-top"></i> 导入</el-button>
+          </el-upload>
+        </div>
+        <div>
+          <el-button type="primary"><i class="el-icon-bottom"></i> 导出</el-button>
+        </div>
+  
+      </div>
+  ```
+  
+  ```javascript
+  export default {
+    name: 'BlogList',
+    data() {
+      return {
+        queryInfo: {
+          title: '',
+          categoryId: null,
+          pageNum: 1,
+          pageSize: 10
+        },
+        total: 0,
+        blogList: [],
+        // 复选框选中的值列表
+        selected: [],
+        tableHeaderColor: 'tableHeaderColor',
+        // 允许上传的博客文件类型
+        fileType: ['md'],
+        // 运行上传文件大小，单位 M
+        fileSize: 1,
+        // 待导入博客文件数量限制
+        fileLimit: 1
+      }
+    },
+    watch: {
+      $route: {
+        // 监听路由变化，由其他界面跳转而来时，刷新博客列表
+        handler(val, oldval) {
+          // 新路由信息
+          console.log(val)
+          // 老路由信息
+          console.log(oldval)
+          this.getBlogList()
+        },
+        // 深度观察监听
+        deep: true
+      }
+    },
+    methods: {
+      // 上传博客之前
+      beforeUpload(file) {
+        if (file.type !== '' || file.type != null || file.type !== undefined) {
+          // 计算文件的大小
+          const fileSize = file.size / 1024 / 1024
+          // 这里做文件大小限制
+          if (fileSize > this.fileSize) {
+            this.$message('上传文件大小不能超过 1MB!')
+            return false
+          }
+          // 截取文件的后缀，判断文件类型
+          const FileExt = file.name.replace(/.+\./, '').toLowerCase()
+          // 如果文件类型不在允许上传的范围内
+          if (this.fileType.includes(FileExt)) {
+            return true
+          } else {
+            this.$message.error('博客文件类型应为.md文件!')
+            return false
+          }
+        }
+      },
+      // 超出文件个数的回调
+      handleExceed(files) {
+        this.$message.warning(`超出上传数量限制！最多上传 ${this.fileLimit} 个博客文件，选择了 ${files.length} 个博客文件`)
+      },
+      // 上传文件的事件
+      importBlog(item) {
+        this.$message('博客上传中······')
+        // 上传文件的需要formdata类型
+        const FormDatas = new FormData()
+        FormDatas.append('file', item.file)
+        uploadBlog(FormDatas).then(res => {
+          this.$message(res.data.message)
+          // 成功过后刷新列表，清空上传文件列表
+          this.handleSuccess()
+        })
+      },
+      // 上传成功后的回调
+      handleSuccess() {
+        this.getBlogList()
+      }
+    },
+  }
+  ```
+
++ [BlogList](src/api/blog/BlogList.js)
+  ```javascript
+  export function uploadBlog(blogFiles) {
+    return request({
+      url: '/blog/uploadBlog',
+      method: 'post',
+      header: { 'Content-Type': 'multipart/form-data' },
+      data: blogFiles
+    })
+  }
+  ```
