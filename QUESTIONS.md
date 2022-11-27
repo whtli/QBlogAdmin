@@ -1539,3 +1539,36 @@ Navbar.vue，退出时提示鉴权失败（后端有问题） ==> 没打开本�
     })
   }
   ```
+  
+## 11. 添加批量导入博客功能
++ 使用excel文件
++ [BlogList](src/views/blog/BlogList.vue)，复用了单个博客导入的事件importBlog、handleExceed、handleSuccess，单独写了导入之前校验的事件beforeExcelUpload
+  ```vue
+        <div>
+          <el-upload action :http-request="importBlog" :on-exceed="handleExceed" :before-upload="beforeExcelUpload" :show-file-list="false">
+            <el-button type="primary"><i class="el-icon-top"></i> 批量（.xlsx）导入</el-button>
+          </el-upload>
+        </div>
+  ```
+  ```javascript
+      beforeExcelUpload(file) {
+        if (file.type !== '' || file.type != null || file.type !== undefined) {
+          // 计算文件的大小
+          const fileSize = file.size / 1024 / 1024
+          // 这里做文件大小限制
+          if (fileSize > this.ExcelFileSize) {
+            this.$message('上传文件大小不能超过 5MB!')
+            return false
+          }
+          // 截取文件的后缀，判断文件类型
+          const suffix = file.name.replace(/.+\./, '').toLowerCase()
+          // 如果文件类型不在允许上传的范围内
+          if (this.ExcelFileType.includes(suffix)) {
+            return true
+          } else {
+            this.$message.error('博客文件类型应为.excel文件!')
+            return false
+          }
+        }
+      },
+  ```
