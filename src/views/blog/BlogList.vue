@@ -14,12 +14,17 @@
         <el-button type="danger" @click="deleteBlogBatch"><i class="el-icon-remove-outline"></i> 批量删除</el-button>
       </div>
       <div>
-        <el-upload action :http-request="importBlog" :limit="fileLimit" :before-upload="beforeUpload" :on-exceed="handleExceed" :show-file-list="false">
-          <el-button type="primary"><i class="el-icon-top"></i> 导入</el-button>
+        <el-upload action :http-request="importBlog" :on-exceed="handleExceed" :before-upload="beforeMarkdownUpload" :show-file-list="false">
+          <el-button type="primary"><i class="el-icon-top"></i> 单个（.md）导入</el-button>
         </el-upload>
       </div>
       <div>
-        <el-button type="primary"><i class="el-icon-bottom"></i> 导出</el-button>
+        <el-upload action :http-request="importBlog" :on-exceed="handleExceed" :before-upload="beforeExcelUpload" :show-file-list="false">
+          <el-button type="primary"><i class="el-icon-top"></i> 批量（.xlsx）导入</el-button>
+        </el-upload>
+      </div>
+      <div>
+        <el-button type="primary" @click="exportBlogBatch"><i class="el-icon-bottom"></i> 批量（.xlsx）导出</el-button>
       </div>
 
     </div>
@@ -43,6 +48,7 @@
             <el-button type="primary" @click="readBlog(scope.row.id)"><i class="el-icon-view"> </i> 查看</el-button>
             <el-button type="success" @click="updateBlog(scope.row.id)"><i class="el-icon-edit"> </i> 编辑</el-button>
             <el-button type="danger" @click="deleteBlog(scope.row.id)"><i class="el-icon-remove"></i> 删除</el-button>
+            <el-button type="danger" @click="exportBlog(scope.row.id)"><i class="el-icon-remove"></i> 下载（.md）</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -82,11 +88,11 @@ export default {
       selected: [],
       tableHeaderColor: 'tableHeaderColor',
       // 允许上传的博客文件类型
-      fileType: ['md'],
+      MarkdownFileType: ['md'],
+      ExcelFileType: ['xlsx', 'xls'],
       // 运行上传文件大小，单位 M
-      fileSize: 1,
-      // 待导入博客文件数量限制
-      fileLimit: 1
+      MarkdownFileSize: 1,
+      ExcelFileSize: 1
     }
   },
   watch: {
@@ -191,23 +197,51 @@ export default {
         })
       })
     },
-    // 上传博客之前
-    beforeUpload(file) {
+    // 根据id下载博客文件（.md）
+    exportBlog() {
+      // window.open('http://localhost:8080/admin/blog/export')
+    },
+    exportBlogBatch() {
+      // window.open('http://localhost:8080/admin/blog/export')
+    },
+    // 上传Markdown文件之前
+    beforeMarkdownUpload(file) {
       if (file.type !== '' || file.type != null || file.type !== undefined) {
         // 计算文件的大小
         const fileSize = file.size / 1024 / 1024
         // 这里做文件大小限制
-        if (fileSize > this.fileSize) {
+        if (fileSize > this.MarkdownFileSize) {
           this.$message('上传文件大小不能超过 1MB!')
           return false
         }
         // 截取文件的后缀，判断文件类型
-        const FileExt = file.name.replace(/.+\./, '').toLowerCase()
+        const suffix = file.name.replace(/.+\./, '').toLowerCase()
         // 如果文件类型不在允许上传的范围内
-        if (this.fileType.includes(FileExt)) {
+        if (this.MarkdownFileType.includes(suffix)) {
           return true
         } else {
           this.$message.error('博客文件类型应为.md文件!')
+          return false
+        }
+      }
+    },
+    // 上传Excel文件之前
+    beforeExcelUpload(file) {
+      if (file.type !== '' || file.type != null || file.type !== undefined) {
+        // 计算文件的大小
+        const fileSize = file.size / 1024 / 1024
+        // 这里做文件大小限制
+        if (fileSize > this.ExcelFileSize) {
+          this.$message('上传文件大小不能超过 5MB!')
+          return false
+        }
+        // 截取文件的后缀，判断文件类型
+        const suffix = file.name.replace(/.+\./, '').toLowerCase()
+        // 如果文件类型不在允许上传的范围内
+        if (this.ExcelFileType.includes(suffix)) {
+          return true
+        } else {
+          this.$message.error('博客文件类型应为.excel文件!')
           return false
         }
       }
