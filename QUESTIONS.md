@@ -1573,3 +1573,63 @@ Navbar.vue，退出时提示鉴权失败（后端有问题） ==> 没打开本�
         }
       },
   ```
+
+## 12. 添加博客分类管理界面与功能
+
++ 新增组件[Category](./src/views/blog/Category.vue)，完成基本的增删改查功能，因为博客分类在实际情况中不会太多，所以不提供条件查询功能
++ 在[index.js](./src/router/index.js)中添加路由Category
+```javascript
+  {
+  path: '/blog',
+    component: Layout,
+    redirect: '/blog/list',
+    name: 'Blog',
+    meta: { title: 'Blog Management', icon: 'nested' },
+  children: [
+    {
+      path: 'category',
+      name: 'Category',
+      component: () => import('@/views/blog/Category'),
+      meta: { title: 'Category', icon: 'table' }
+    }
+  ]
+},
+```
++ 新增对应的请求接口[Category](src/api/blog/Category.js)
+```javascript
+import request from '@/utils/request'
+
+export function addCategory(form) {
+  return request({
+    url: '/category/addCategory',
+    method: 'POST',
+    data: { ...form }
+  })
+}
+
+export function deleteCategoryById(id) {
+  return request({
+    url: '/category/deleteCategoryById',
+    method: 'delete',
+    params: { id }
+  })
+}
+
+export function editCategory(form) {
+  return request({
+    url: '/category/editCategory',
+    method: 'PUT',
+    data: {
+      ...form
+    }
+  })
+}
+
+export function getCategories(queryInfo) {
+  return request({
+    url: '/category/getCategories',
+    method: 'get',
+    params: { ...queryInfo }
+  })
+}
+```
