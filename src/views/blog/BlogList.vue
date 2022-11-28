@@ -45,10 +45,10 @@
         <el-table-column label="作者" prop="userId" width="50"> </el-table-column>
         <el-table-column label="操作">
           <template v-slot="scope">
-            <el-button type="primary" @click="readBlog(scope.row.id)"><i class="el-icon-view"> </i> 查看</el-button>
-            <el-button type="success" @click="updateBlog(scope.row.id)"><i class="el-icon-edit"> </i> 编辑</el-button>
-            <el-button type="danger" @click="deleteBlog(scope.row.id)"><i class="el-icon-remove"></i> 删除</el-button>
-            <el-button type="danger" @click="exportBlog(scope.row.id)"><i class="el-icon-remove"></i> 下载（.md）</el-button>
+            <el-button type="primary" icon="el-icon-view" @click="readBlog(scope.row.id)"> 查看</el-button>
+            <el-button type="success" icon="el-icon-edit" @click="updateBlog(scope.row.id)"> 编辑</el-button>
+            <el-button type="danger" icon="el-icon-delete" @click="deleteBlog(scope.row.id)"> 删除</el-button>
+            <el-button type="primary" icon="el-icon-bottom" @click="exportBlog(scope.row.id)"> 下载（.md）</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -257,7 +257,7 @@ export default {
       const FormDatas = new FormData()
       FormDatas.append('file', item.file)
       uploadBlog(FormDatas).then(res => {
-        this.$message(res.data.message)
+        this.$message.success(res.data.message)
         // 成功过后刷新列表，清空上传文件列表
         this.handleSuccess()
       })

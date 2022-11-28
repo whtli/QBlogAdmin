@@ -52,7 +52,7 @@ export default {
   },
   created() {
     // 当界面被创建时，监听是否有路由参数
-    // 若有说明是修改指定博客，此时需要先查询并显示
+    // 若有说明是阅读指定博客，此时需要先查询并显示
     // 若无说明是新增博客
     if (this.$route.params.id) {
       this.getBlog(this.$route.params.id)
