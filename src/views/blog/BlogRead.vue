@@ -64,7 +64,7 @@ export default {
       getBlogById(id).then(res => {
         // 把查询结果赋值给this.blogList，使其显示到编辑界面上
         this.blogForm = res.data.data
-        const createTime = this.blogForm.createTime.substring(0, 19).replace('T', ' ')
+        const createTime = this.blogForm.createTime.substring(0, 10)
         this.blogForm.createTime = createTime
       }).catch(() => {
         this.$message({
@@ -108,29 +108,23 @@ export default {
   margin: auto !important;
   display: flex;
   justify-content: space-around;
+  size: 14px;
+  font-size: 14px;
 }
 
 .m-datetime {
   color: #00a7e0 !important;
-  size: 16px;
-  font-size: 16px;
 }
 
 .m-views {
   color: #ff3f1f !important;
-  size: 16px;
-  font-size: 16px;
 }
 
 .m-words {
   color: #000 !important;
-  size: 16px;
-  font-size: 16px;
 }
 
 .m-read-time {
   color: #B35B4B !important;
-  size: 16px;
-  font-size: 16px;
 }
 </style>
