@@ -1540,7 +1540,6 @@ Navbar.vue，退出时提示鉴权失败（后端有问题） ==> 没打开本�
   }
   ```
 
-  
 ## 11. 添加批量导入博客功能
 + 使用excel文件
 + [BlogList](src/views/blog/BlogList.vue)，复用了单个博客导入的事件importBlog、handleExceed、handleSuccess，单独写了导入之前校验的事件beforeExcelUpload
@@ -1574,62 +1573,113 @@ Navbar.vue，退出时提示鉴权失败（后端有问题） ==> 没打开本�
       },
   ```
 
-## 12. 添加博客分类管理界面与功能
-
+## 12. 添加博客分类、标签管理界面与功能
+### 12.1 博客分类
 + 新增组件[Category](./src/views/blog/Category.vue)，完成基本的增删改查功能，因为博客分类在实际情况中不会太多，所以不提供条件查询功能
-+ 在[index.js](./src/router/index.js)中添加路由Category
-```javascript
-  {
-  path: '/blog',
-    component: Layout,
-    redirect: '/blog/list',
-    name: 'Blog',
-    meta: { title: 'Blog Management', icon: 'nested' },
-  children: [
-    {
-      path: 'category',
-      name: 'Category',
-      component: () => import('@/views/blog/Category'),
-      meta: { title: 'Category', icon: 'table' }
-    }
-  ]
-},
-```
+
 + 新增对应的请求接口[Category](src/api/blog/Category.js)
-```javascript
-import request from '@/utils/request'
+  ```javascript
+  import request from '@/utils/request'
+  
+  export function addCategory(form) {
+    return request({
+      url: '/category/addCategory',
+      method: 'POST',
+      data: { ...form }
+    })
+  }
+  
+  export function deleteCategoryById(id) {
+    return request({
+      url: '/category/deleteCategoryById',
+      method: 'delete',
+      params: { id }
+    })
+  }
+  
+  export function editCategory(form) {
+    return request({
+      url: '/category/editCategory',
+      method: 'PUT',
+      data: {
+        ...form
+      }
+    })
+  }
+  
+  export function getCategories(queryInfo) {
+    return request({
+      url: '/category/getCategories',
+      method: 'get',
+      params: { ...queryInfo }
+    })
+  }
+  ```
 
-export function addCategory(form) {
-  return request({
-    url: '/category/addCategory',
-    method: 'POST',
-    data: { ...form }
-  })
-}
+### 12.2 博客标签
++ 新增组件[Tag](./src/views/blog/Tag.vue)，完成基本的增删改查功能，因为博客分类在实际情况中不会太多，所以不提供条件查询功能
 
-export function deleteCategoryById(id) {
-  return request({
-    url: '/category/deleteCategoryById',
-    method: 'delete',
-    params: { id }
-  })
-}
++ 新增对应的请求接口[Tag](src/api/blog/Tag.js)
+  ```javascript
+  import request from '@/utils/request'
+  
+  export function addTag(form) {
+    return request({
+      url: '/tag/addTag',
+      method: 'POST',
+      data: { ...form }
+    })
+  }
+  
+  export function deleteTagById(id) {
+    return request({
+      url: '/tag/deleteTagById',
+      method: 'delete',
+      params: { id }
+    })
+  }
+  
+  export function editTag(form) {
+    return request({
+      url: '/tag/editTag',
+      method: 'PUT',
+      data: {
+        ...form
+      }
+    })
+  }
+  
+  export function getTags(queryInfo) {
+    return request({
+      url: '/tag/getTags',
+      method: 'get',
+      params: { ...queryInfo }
+    })
+  }
+  ```
 
-export function editCategory(form) {
-  return request({
-    url: '/category/editCategory',
-    method: 'PUT',
-    data: {
-      ...form
-    }
-  })
-}
-
-export function getCategories(queryInfo) {
-  return request({
-    url: '/category/getCategories',
-    method: 'get',
-    params: { ...queryInfo }
-  })
-}
-```
+### 给分类和标签组件添加路由
++ 在[index.js](./src/router/index.js)中添加路由Category
+  ```javascript
+    {
+    path: '/blog',
+      component: Layout,
+      redirect: '/blog/list',
+      name: 'Blog',
+      meta: { title: 'Blog Management', icon: 'nested' },
+    children: [
+      {
+        path: 'category',
+        name: 'Category',
+        component: () => import('@/views/blog/Category'),
+        meta: { title: 'Category', icon: 'table' }
+      },
+      {
+        path: 'tag',
+        name: 'Tag',
+        component: () => import('@/views/blog/Tag'),
+        meta: { title: 'Tag', icon: 'table' }
+      }
+    ]
+  },
+  ```

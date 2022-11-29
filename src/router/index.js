@@ -199,6 +199,12 @@ export const constantRoutes = [
         name: 'Category',
         component: () => import('@/views/blog/Category'),
         meta: { title: 'Category', icon: 'table' }
+      },
+      {
+        path: 'tag',
+        name: 'Tag',
+        component: () => import('@/views/blog/Tag'),
+        meta: { title: 'Tag', icon: 'table' }
       }
     ]
   },
