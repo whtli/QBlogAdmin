@@ -13,6 +13,14 @@
             <i class="el-icon-timer m-read-time"><span> 阅读时长：{{ blogForm.readTime }} 分钟</span></i>
           </div>
         </el-form-item>
+        <el-form-item>
+          <el-col :span="11" style="">
+              <el-button ><span> 分类：{{ category.categoryName }}</span></el-button>
+          </el-col>
+          <el-col :span="11">
+            <el-button round v-for="(tag, index) in tagList" :key="index">{{ tag.tagName }}</el-button>
+          </el-col>
+        </el-form-item>
         <!--<el-form-item label="描述" prop="description">
           <el-input v-model="blogForm.description" type="textarea" readonly/>
         </el-form-item>-->
@@ -25,7 +33,7 @@
 </template>
 
 <script>
-import { getBlogById } from '@/api/blog/BlogWrite'
+import { getBlogInfoById } from '@/api/blog/BlogWrite'
 
 export default {
   name: 'BlogRead',
@@ -47,7 +55,9 @@ export default {
         categoryId: null,
         top: false,
         password: ''
-      }
+      },
+      tagList: {},
+      category: {}
     }
   },
   created() {
@@ -55,21 +65,23 @@ export default {
     // 若有说明是阅读指定博客，此时需要先查询并显示
     // 若无说明是新增博客
     if (this.$route.params.id) {
-      this.getBlog(this.$route.params.id)
+      this.getBlogInfo(this.$route.params.id)
     }
   },
   methods: {
     // 根据id查询唯一的博客
-    getBlog(id) {
-      getBlogById(id).then(res => {
-        // 把查询结果赋值给this.blogList，使其显示到编辑界面上
-        this.blogForm = res.data.data
+    getBlogInfo(blogId) {
+      getBlogInfoById(blogId).then(res => {
+        // 把查询结果赋值给blogList、tagList、category，使其显示到编辑界面上
+        this.tagList = res.data.data.tagList
+        this.category = res.data.data.category
+        this.blogForm = res.data.data.blog
         const createTime = this.blogForm.createTime.substring(0, 10)
         this.blogForm.createTime = createTime
       }).catch(() => {
         this.$message({
           type: 'warning',
-          message: '获取文博客失败，请重试'
+          message: '获取博客信息失败，请重试'
         })
       })
     }
@@ -127,4 +139,5 @@ export default {
 .m-read-time {
   color: #B35B4B !important;
 }
+
 </style>

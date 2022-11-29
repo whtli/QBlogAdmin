@@ -1814,3 +1814,57 @@ Navbar.vue，退出时提示鉴权失败（后端有问题） ==> 没打开本�
     })
   }
   ```
+
+## 14. 在阅读界面中联动展示博客所属的分类及其标签
++ 在BlogRead中添加展示
+  ```vue
+          <el-form-item>
+            <el-col :span="11" style="">
+                <el-button ><span> 分类：{{ category.categoryName }}</span></el-button>
+            </el-col>
+            <el-col :span="11">
+              <el-button round v-for="(tag, index) in tagList" :key="index">{{ tag.tagName }}</el-button>
+            </el-col>
+          </el-form-item>
+  ```
+
++ 修改BlogRead中的事件并新增对应的变量用于绑定到展示位置
+  ```javascript
+  <script>
+  import { getBlogInfoById } from '@/api/blog/BlogWrite'
+  
+  export default {
+    name: 'BlogRead',
+    data() {
+      return {
+        // 新增标签列表和分类接收变量  
+        tagList: {},
+        category: {}
+      }
+    },
+    created() {
+      if (this.$route.params.id) {
+        this.getBlogInfo(this.$route.params.id)
+      }
+    },
+    methods: {
+      // 根据id查询唯一的博客
+      getBlogInfo(blogId) {
+        getBlogInfoById(blogId).then(res => {
+          // 把查询结果赋值给blogList、tagList、category，使其显示到编辑界面上
+          this.tagList = res.data.data.tagList
+          this.category = res.data.data.category
+          this.blogForm = res.data.data.blog
+          const createTime = this.blogForm.createTime.substring(0, 10)
+          this.blogForm.createTime = createTime
+        }).catch(() => {
+          this.$message({
+            type: 'warning',
+            message: '获取博客信息失败，请重试'
+          })
+        })
+      }
+    }
+  }
+  </script>
+  ```

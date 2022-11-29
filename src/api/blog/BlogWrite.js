@@ -1,10 +1,10 @@
 import request from '@/utils/request'
 
-export function getBlogById(id) {
+export function getBlogInfoById(blogId) {
   return request({
-    url: '/blog/getBlogById',
+    url: '/blog/getBlogInfoById',
     method: 'GET',
-    params: { id }
+    params: { blogId }
   })
 }
 
