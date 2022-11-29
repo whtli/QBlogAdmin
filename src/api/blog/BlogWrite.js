@@ -25,13 +25,20 @@ export function deleteImg(url) {
   })
 }
 
-export function submitBlog(blog) {
+export function submitBlog(form) {
   return request({
     url: '/blog/submitBlog',
     method: 'post',
     data: {
-      ...blog
+      ...form
     }
+  })
+}
+
+export function getCategoryAndTag() {
+  return request({
+    url: '/blog/getCategoryAndTag',
+    method: 'GET'
   })
 }
 

@@ -12,12 +12,24 @@
           <br>
           <mavon-editor ref="md" v-model="blogForm.content" @imgAdd="imgAdd" @imgDel="imgDel" @save="contentSave" />
         </el-form-item>
-        <!--<el-form-item label="字数" prop="words">
-          <el-input v-model="blogForm.words" />
+        <el-form-item>
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item label="分类" prop="categoryList">
+                <el-select v-model="blogForm.categoryId" placeholder="请选择分类" clearable :filterable="true" style="width: 100%;">
+                  <el-option :label="item.categoryName" :value="item.id" v-for="item in categoryList" :key="item.id"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="标签" prop="tagList">
+                <el-select v-model="selectedTags" placeholder="请选择标签（输入可添加新标签）" clearable :allow-create="true" :filterable="true" :multiple="true" style="width: 100%;">
+                  <el-option :label="item.tagName" :value="item.id" v-for="item in tagList" :key="item.id"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
         </el-form-item>
-        <el-form-item label="浏览次数" prop="words">
-          <el-input v-model="blogForm.views" />
-        </el-form-item>-->
         <el-form-item>
           <el-button type="primary" @click="blogSubmit">
             发布
@@ -32,12 +44,15 @@
 </template>
 
 <script>
-import { addImage, deleteImg, submitBlog, getBlogById } from '@/api/blog/BlogWrite'
+import { addImage, deleteImg, submitBlog, getBlogById, getCategoryAndTag } from '@/api/blog/BlogWrite'
 
 export default {
   name: 'BlogWrite',
   data() {
     return {
+      categoryList: [],
+      tagList: [],
+      selectedTags: [],
       blogForm: {
         id: '',
         title: '',
@@ -69,6 +84,7 @@ export default {
     }
   },
   created() {
+    this.getCategoryAndTag()
     // 当界面被创建时，监听是否有路由参数
     // 若有说明是修改指定博客，此时需要先查询并显示
     // 若无说明是新增博客
@@ -134,7 +150,12 @@ export default {
     blogSubmit() {
       this.$refs.blogForm.validate((valid) => {
         if (valid) {
-          submitBlog(this.blogForm).then(res => {
+          // 由原来的blogForm改为blog和tags，因为blog与tag是一对多的关系，所以tag不是blog的字段，两者的映射关系由另一个表来维护
+          const form = {
+            blog: this.blogForm,
+            tags: this.selectedTags
+          }
+          submitBlog(form).then(res => {
             console.log(res)
             this.$alert('发布成功', '提示', {
               confirmButtonText: '确定',
@@ -150,8 +171,18 @@ export default {
         }
       })
     },
+    // 重置所有输入框中的内容
     blogReset() {
       this.$refs.blogForm.resetFields()
+      this.selectedTags = []
+      // TODO：清空分类框
+    },
+    // 获取分类和标签
+    getCategoryAndTag() {
+      getCategoryAndTag().then(res => {
+        this.categoryList = res.data.data.categoryList
+        this.tagList = res.data.data.tagList
+      })
     }
   }
 }

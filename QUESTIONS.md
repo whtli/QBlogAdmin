@@ -1683,3 +1683,134 @@ Navbar.vue，退出时提示鉴权失败（后端有问题） ==> 没打开本�
     ]
   },
   ```
+
+## 13. 整合写博客、选择分类、选择标签
++ 在写博客界面[BlogWrite](src/views/blog/BlogWrite.vue)整合分类、标签的选择与创建功能
+  ```vue
+  <el-form-item>
+    <el-row :gutter="20">
+      <el-col :span="12">
+        <el-form-item label="分类" prop="categoryList">
+          <el-select v-model="blogForm.categoryId" placeholder="请选择分类" clearable :filterable="true" style="width: 100%;">
+            <el-option :label="item.categoryName" :value="item.id" v-for="item in categoryList" :key="item.id"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-col>
+      <el-col :span="12">
+        <el-form-item label="标签" prop="tagList">
+          <el-select v-model="selectedTags" placeholder="请选择标签（输入可添加新标签）" clearable :allow-create="true" :filterable="true" :multiple="true" style="width: 100%;">
+            <el-option :label="item.tagName" :value="item.id" v-for="item in tagList" :key="item.id"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-col>
+    </el-row>
+  </el-form-item>
+  ```
+  
+  ```javascript
+  <script>
+  import { addImage, deleteImg, submitBlog, getBlogById, getCategoryAndTag } from '@/api/blog/BlogWrite'
+  
+  export default {
+    name: 'BlogWrite',
+    data() {
+      return {
+        categoryList: [],
+        tagList: [],
+        selectedTags: [],
+        blogForm: {
+          id: '',
+          title: '',
+          firstPicture: '',
+          description: '',
+          content: '',
+          published: true,
+          commentEnabled: false,
+          views: 0,
+          words: null,
+          readTime: null,
+          categoryId: null,
+          top: false,
+          password: ''
+        },
+        rules: {
+          title: [
+            { required: true, message: '请输入标题', trigger: 'blur' },
+            { min: 3, max: 50, message: '长度在3到50个字符', trigger: 'blur' }
+          ],
+          description: [
+            { required: true, message: '请输入摘要', trigger: 'blur' },
+            { min: 3, max: 50, message: '长度在3到50个字符', trigger: 'blur' }
+          ],
+          content: [
+            { required: true, message: '请输入正文', trigger: 'blur' }
+          ]
+        }
+      }
+    },
+    created() {
+      // 界面被创建后先把已有的分类和标签获取到，方便写博客的时候选择
+      this.getCategoryAndTag()
+      // 当界面被创建时，监听是否有路由参数
+      // 若有说明是修改指定博客，此时需要先查询并显示
+      // 若无说明是新增博客
+      if (this.$route.params.id) {
+        this.getBlog(this.$route.params.id)
+      }
+    },
+    methods: {
+      // 提交（发布/更新）博客
+      blogSubmit() {
+        this.$refs.blogForm.validate((valid) => {
+          if (valid) {
+            // 由原来的blogForm改为blog和tags，因为blog与tag是一对多的关系，所以tag不是blog的字段，两者的映射关系由另一个表来维护  
+            const form = {
+              blog: this.blogForm,
+              tags: this.selectedTags
+            }
+            submitBlog(form).then(res => {
+              console.log(res)
+              this.$alert('发布成功', '提示', {
+                confirmButtonText: '确定',
+                callback: action => {
+                  this.$router.push('/blog/list')
+                  console.log(action)
+                }
+              })
+            })
+          } else {
+            console.log('error submit!')
+            return false
+          }
+        })
+      },
+      // 重置所有输入框中的内容
+      blogReset() {
+        this.$refs.blogForm.resetFields()
+        // 选择的标签也要重置
+        this.selectedTags = []
+      },
+      // 获取分类和标签
+      getCategoryAndTag() {
+        getCategoryAndTag().then(res => {
+          this.categoryList = res.data.data.categoryList
+          this.tagList = res.data.data.tagList
+        })
+      }
+    }
+  }
+  </script>
+  ```
+
++ 在[BlogWrite](src/api/blog/BlogWrite.js)中修改请求接口
+  ```javascript
+  export function submitBlog(form) {
+    return request({
+      url: '/blog/submitBlog',
+      method: 'post',
+      data: {
+        ...form
+      }
+    })
+  }
+  ```
