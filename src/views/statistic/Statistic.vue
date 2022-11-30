@@ -1,6 +1,58 @@
 <template>
-  <div>
-    <el-row class="panel-group" :gutter="20">
+  <div style="margin: 20px">
+    <el-row :gutter="20" style="margin: 20px">
+      <el-col :span="6">
+        <el-card style="color: #409EFF">
+          <div class="el-icon-s-management"> 博客总数</div>
+          <div style="padding: 10px 0; text-align: center; font-weight: bold">{{ blogCount }}</div>
+        </el-card>
+      </el-col>
+      <el-col :span="6">
+        <el-card style="color: #F56C6C">
+          <div class="el-icon-s-marketing"> </div>
+          <div style="padding: 10px 0; text-align: center; font-weight: bold"></div>
+        </el-card>
+      </el-col>
+      <el-col :span="6">
+        <el-card style="color: #67C23A">
+          <div class="el-icon-user-solid"> </div>
+          <div style="padding: 10px 0; text-align: center; font-weight: bold"></div>
+        </el-card>
+      </el-col>
+      <el-col :span="6">
+        <el-card style="color: #E6A23C">
+          <div class="el-icon-s-opportunity"> 评论数</div>
+          <div style="padding: 10px 0; text-align: center; font-weight: bold">{{ totalComment }}</div>
+        </el-card>
+      </el-col>
+    </el-row>
+    <el-row :gutter="20" style="margin: 20px">
+      <el-col :span="6">
+        <el-card style="color: #409EFF">
+          <div class="el-icon-s-management"> 总PV</div>
+          <div style="padding: 10px 0; text-align: center; font-weight: bold">{{ totalPageView }}</div>
+        </el-card>
+      </el-col>
+      <el-col :span="6">
+        <el-card style="color: #F56C6C">
+          <div class="el-icon-s-marketing"> 日PV</div>
+          <div style="padding: 10px 0; text-align: center; font-weight: bold">{{ todayPageView }}</div>
+        </el-card>
+      </el-col>
+      <el-col :span="6">
+        <el-card style="color: #67C23A">
+          <div class="el-icon-user-solid"> 总UV</div>
+          <div style="padding: 10px 0; text-align: center; font-weight: bold">{{ totalUniqueVisitor }}</div>
+        </el-card>
+      </el-col>
+      <el-col :span="6">
+        <el-card style="color: #E6A23C">
+          <div class="el-icon-s-opportunity"> 日UV</div>
+          <div style="padding: 10px 0; text-align: center; font-weight: bold">{{ todayUniqueVisitor }}</div>
+        </el-card>
+      </el-col>
+    </el-row>
+    <el-row :gutter="20" style="margin: 20px">
       <el-col :span="12">
         <el-card>
           <div ref="blogYear" style="height:300px;"></div>
@@ -12,7 +64,7 @@
         </el-card>
       </el-col>
     </el-row>
-    <el-row class="panel-group" :gutter="20">
+    <el-row :gutter="20" style="margin: 20px" >
       <el-col :span="12">
         <el-card>
           <div ref="blogCategory" style="height:300px;"></div>
@@ -30,6 +82,12 @@ export default {
   name: 'Statistic',
   data() {
     return {
+      blogCount: 0,
+      totalPageView: 0,
+      todayPageView: 0,
+      totalUniqueVisitor: 0,
+      todayUniqueVisitor: 0,
+      totalComment: 0,
       blogCategory: null,
       blogCategoryOption: {
         title: {
@@ -146,6 +204,18 @@ export default {
   methods: {
     refresh() {
       getStatistic().then(response => {
+        // 博客总数
+        this.blogCount = response.data.data.blogCount
+        // 总页面访问量
+        this.totalPageView = response.data.data.totalPageView
+        // 今日页面访问量
+        this.todayPageView = response.data.data.todayPageView
+        // 总独立访客数
+        this.totalUniqueVisitor = response.data.data.totalUniqueVisitor
+        // 今日独立访客数
+        this.todayUniqueVisitor = response.data.data.todayUniqueVisitor
+        // 总评论数
+        this.totalComment = response.data.data.totalComment
         // 不同分类下博客数量，饼图
         this.blogCategoryOption.series[0].data = response.data.data.blogCategoryList
         this.blogCategory = echarts.init(this.$refs.blogCategory)
