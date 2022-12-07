@@ -32,3 +32,11 @@ export function uploadBlog(blogFiles) {
     data: blogFiles
   })
 }
+
+export function changeBlogStatusById(blogId) {
+  return request({
+    url: '/blog/changeBlogStatusById',
+    method: 'post',
+    params: { blogId }
+  })
+}

@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import { addImage, deleteImg, submitBlog, getBlogById, getCategoryAndTag } from '@/api/blog/BlogWrite'
+import { addImage, deleteImg, submitBlog, getBlogInfoById, getCategoryAndTag } from '@/api/blog/BlogWrite'
 
 export default {
   name: 'BlogWrite',
@@ -95,7 +95,7 @@ export default {
   methods: {
     // 根据id查询唯一的博客
     getBlog(id) {
-      getBlogById(id).then(res => {
+      getBlogInfoById(id).then(res => {
         // 把查询结果赋值给this.blogList，使其显示到编辑界面上
         this.blogForm = res.data.data
       }).catch(() => {

@@ -6,27 +6,16 @@
       <el-button @click.native.prevent="getBlogList" style="margin-left: 5px" type="primary">查询</el-button>
 <!--      <el-button @click.native.prevent="getBlogList" style="margin-left: 5px" type="primary">刷新列表</el-button>-->
     </div>
-    <div style="margin-left: 10px; width: 36%; display: flex; justify-content: space-between ">
-      <div>
-        <el-button type="primary" @click="toBlogWritePage"><i class="el-icon-circle-plus-outline"></i> 新增</el-button>
-      </div>
-      <div>
-        <el-button type="danger" @click="deleteBlogBatch"><i class="el-icon-remove-outline"></i> 批量删除</el-button>
-      </div>
-      <div>
-        <el-upload action :http-request="importBlog" :on-exceed="handleExceed" :before-upload="beforeMarkdownUpload" :show-file-list="false">
-          <el-button type="primary"><i class="el-icon-top"></i> 单个（.md）导入</el-button>
-        </el-upload>
-      </div>
-      <div>
-        <el-upload action :http-request="importBlog" :on-exceed="handleExceed" :before-upload="beforeExcelUpload" :show-file-list="false">
-          <el-button type="primary"><i class="el-icon-top"></i> 批量（.xlsx）导入</el-button>
-        </el-upload>
-      </div>
-      <div>
-        <el-button type="primary" @click="exportBlogBatch"><i class="el-icon-bottom"></i> 批量（.xlsx）导出</el-button>
-      </div>
-
+    <div style="margin-left: 10px; width: 50%; display: flex; justify-content: space-between ">
+      <el-button type="primary" @click="toBlogWritePage"><i class="el-icon-circle-plus-outline"></i> 新增</el-button>
+      <el-button type="danger" @click="deleteBlogBatch"><i class="el-icon-remove-outline"></i> 批量删除</el-button>
+      <el-upload action :http-request="importBlog" :on-exceed="handleExceed" :before-upload="beforeMarkdownUpload" :show-file-list="false">
+        <el-button type="primary"><i class="el-icon-top"></i> 单个（.md）导入</el-button>
+      </el-upload>
+      <el-upload action :http-request="importBlog" :on-exceed="handleExceed" :before-upload="beforeExcelUpload" :show-file-list="false">
+        <el-button type="primary"><i class="el-icon-top"></i> 批量（.xlsx）导入</el-button>
+      </el-upload>
+      <el-button type="primary" @click="exportBlogBatch"><i class="el-icon-bottom"></i> 批量（.xlsx）导出</el-button>
     </div>
     <div style="margin: 10px 0; margin-left: 1%">
       <el-table :data="blogList" border :stripe="true" :height="660" :header-cell-class-name="tableHeaderColor"  @selection-change="handleSelectionChange">
@@ -34,9 +23,16 @@
         <!--<el-table-column label="序号" prop="id" width="50"> </el-table-column>-->
         <el-table-column label="标题" prop="title" width="100"> </el-table-column>
         <el-table-column label="描述" prop="description" width="200"> </el-table-column>
-        <el-table-column label="公开" prop="published" width="60"><template v-slot="scope">
-          {{scope.row.published ? "公开":"隐藏"}}
-        </template> </el-table-column>
+        <el-table-column label="可见性" prop="published" width="160"><template v-slot="scope">
+          <el-switch
+            v-model="scope.row.published"
+            active-text="公开"
+            inactive-text="隐藏"
+            @change="changeBlogStatus(scope.row.id)"
+            active-color="#13ce66"
+            inactive-color="#ff4949">
+          </el-switch>
+        </template></el-table-column>
         <el-table-column label="创建时间" prop="createTime" width="200"> </el-table-column>
         <el-table-column label="更新时间" prop="updateTime" width="200"> </el-table-column>
         <el-table-column label="浏览量" prop="views" width="60"> </el-table-column>
@@ -70,7 +66,7 @@
 </template>
 
 <script>
-import { getBlogs, deleteBlogById, deleteBlogBatchByIds, uploadBlog } from '@/api/blog/BlogList'
+import { getBlogs, deleteBlogById, deleteBlogBatchByIds, uploadBlog, changeBlogStatusById } from '@/api/blog/BlogList'
 
 export default {
   name: 'BlogList',
@@ -152,6 +148,13 @@ export default {
           this.$router.push(`/blog/edit/${id}`)
           // console.log(action)
         }
+      })
+    },
+    // 更改指定博客的可见性
+    changeBlogStatus(id) {
+      changeBlogStatusById(id).then(response => {
+        this.$message.success(response.data.message)
+        this.getBlogList()
       })
     },
     // 根据id删除博客
