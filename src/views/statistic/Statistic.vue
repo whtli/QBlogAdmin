@@ -9,14 +9,14 @@
       </el-col>
       <el-col :span="6">
         <el-card style="color: #F56C6C">
-          <div class="el-icon-s-marketing"> </div>
-          <div style="padding: 10px 0; text-align: center; font-weight: bold"></div>
+          <div class="el-icon-s-marketing"> TODO1</div>
+          <div style="padding: 10px 0; text-align: center; font-weight: bold">XXX</div>
         </el-card>
       </el-col>
       <el-col :span="6">
         <el-card style="color: #67C23A">
-          <div class="el-icon-user-solid"> </div>
-          <div style="padding: 10px 0; text-align: center; font-weight: bold"></div>
+          <div class="el-icon-user-solid"> TOTO2</div>
+          <div style="padding: 10px 0; text-align: center; font-weight: bold">XXX</div>
         </el-card>
       </el-col>
       <el-col :span="6">
