@@ -214,10 +214,35 @@ export const constantRoutes = [
     component: Layout,
     children: [
       {
-        path: 'data',
+        path: 'statistic',
         name: 'Statistic',
         component: () => import('@/views/statistic/Statistic'),
         meta: { title: 'Data Statistics', icon: 'el-icon-s-data' }
+      }
+    ]
+  },
+
+  {
+    path: '/Log',
+    redirect: '/Log/operationLog',
+    component: Layout,
+    name: 'Log',
+    meta: {
+      title: 'Log',
+      icon: 'el-icon-menu'
+    },
+    children: [
+      /* {
+        path: 'visitLog',
+        name: 'VisitLog',
+        component: () => import('@/views/log/VisitLog'),
+        meta: { title: 'Visit Log', icon: 'el-icon-s-data' }
+      },*/
+      {
+        path: 'operationLog',
+        name: 'OperationLog',
+        component: () => import('@/views/log/OperationLog'),
+        meta: { title: 'Operation Log', icon: 'el-icon-s-data' }
       }
     ]
   },

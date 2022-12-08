@@ -1868,3 +1868,29 @@ Navbar.vue，退出时提示鉴权失败（后端有问题） ==> 没打开本�
   }
   </script>
   ```
+
+## 15. 添加操作日志记录展示
++ 界面组件[OperationLog](src/views/log/OperationLog.vue)
++ api文件[OperationLog](src/api/log/OperationLog.js)
++ 添加路由[index.js](src/router/index.js)
+  ```javascript
+    {
+      path: '/Log',
+      redirect: '/Log/operationLog',
+      component: Layout,
+      name: 'Log',
+      meta: {
+        title: 'Log',
+        icon: 'el-icon-menu'
+      },
+      children: [
+        {
+          path: 'operationLog',
+          name: 'OperationLog',
+          component: () => import('@/views/log/OperationLog'),
+          meta: { title: 'Operation Log', icon: 'el-icon-s-data' }
+        }
+      ]
+    },
+  ```
++ 
