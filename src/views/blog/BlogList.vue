@@ -2,7 +2,7 @@
   <div>
     <div style="padding: 10px 0; margin-left: 1%">
       <el-input placeholder="请输入标题" v-model="queryInfo.title" :clearable="true" style="width: 200px" suffix-icon="el-icon-document-remove"></el-input>
-      <el-input placeholder="请输入描述" v-model="queryInfo.categoryId" :clearable="true" style="width: 200px" suffix-icon="el-icon-document"></el-input>
+      <el-input placeholder="请输入分类id" v-model="queryInfo.categoryId" :clearable="true" style="width: 200px" suffix-icon="el-icon-document"></el-input>
       <el-button @click.native.prevent="getBlogList" style="margin-left: 5px" type="primary">查询</el-button>
 <!--      <el-button @click.native.prevent="getBlogList" style="margin-left: 5px" type="primary">刷新列表</el-button>-->
     </div>
@@ -22,7 +22,7 @@
         <el-table-column type="selection" width="55"> </el-table-column>
         <!--<el-table-column label="序号" prop="id" width="50"> </el-table-column>-->
         <el-table-column label="标题" prop="title" width="100"> </el-table-column>
-        <el-table-column label="描述" prop="description" width="200"> </el-table-column>
+        <el-table-column label="描述" prop="description" width="200" show-overflow-tooltip="true"> </el-table-column>
         <el-table-column label="可见性" prop="published" width="160"><template v-slot="scope">
           <el-switch
             v-model="scope.row.published"
