@@ -1894,3 +1894,8 @@ Navbar.vue，退出时提示鉴权失败（后端有问题） ==> 没打开本�
     },
   ```
 + 
+
+# 16. 添加访客界面，用于测试后端的redis
++ 界面见[Front.vue](src/views/front/Front.vue)组件
++ 接口见[Front.js](src/api/front/Front.js)文件
++ 在[index](src/router/index.js)中添加路由
