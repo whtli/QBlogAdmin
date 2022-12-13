@@ -62,7 +62,10 @@ service.interceptors.response.use(
         duration: 5 * 1000
       })
       if (res.code === 401) {
-        router.push('Login')
+        console.log('logout as token fail')
+        store.commit('REMOVE_INFO')
+        router.push('/login')
+        // router.push('Login')
       }
       // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
       if (res.code === 508 || res.code === 512 || res.code === 514) {
