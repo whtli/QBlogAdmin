@@ -22,7 +22,7 @@
         <el-table-column type="selection" width="55"> </el-table-column>
         <!--<el-table-column label="序号" prop="id" width="50"> </el-table-column>-->
         <el-table-column label="标题" prop="title" width="100"> </el-table-column>
-        <el-table-column label="描述" prop="description" width="200" show-overflow-tooltip="true"> </el-table-column>
+        <el-table-column label="描述" prop="description" width="200" :show-overflow-tooltip="true"> </el-table-column>
         <el-table-column label="可见性" prop="published" width="160"><template v-slot="scope">
           <el-switch
             v-model="scope.row.published"
@@ -37,7 +37,8 @@
         <el-table-column label="更新时间" prop="updateTime" width="200"> </el-table-column>
         <el-table-column label="浏览量" prop="views" width="60"> </el-table-column>
         <el-table-column label="字数" prop="words" width="50"> </el-table-column>
-        <el-table-column label="分类" prop="categoryId" width="100"> </el-table-column>
+<!--        <el-table-column label="分类" prop="categoryId" width="100"> </el-table-column>-->
+        <el-table-column label="分类名" prop="categoryName" width="100"> </el-table-column>
         <el-table-column label="作者" prop="userId" width="50"> </el-table-column>
         <el-table-column label="操作">
           <template v-slot="scope">

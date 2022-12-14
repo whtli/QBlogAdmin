@@ -15,7 +15,7 @@
         <el-table-column label="更新时间" prop="updateTime" width="200"> </el-table-column>
         <el-table-column label="浏览量" prop="views" width="60"> </el-table-column>
         <el-table-column label="字数" prop="words" width="50"> </el-table-column>
-        <el-table-column label="分类" prop="categoryId" width="100"> </el-table-column>
+        <el-table-column label="分类" prop="categoryName" width="100"> </el-table-column>
         <el-table-column label="作者" prop="userId" width="50"> </el-table-column>
         <el-table-column label="操作">
           <template v-slot="scope">
@@ -78,7 +78,7 @@ export default {
       // console.log(this.queryInfo)
       getBlogList(this.queryInfo).then(res => {
         this.blogList = res.data.data
-        this.total = 0
+        this.total = this.blogList.length
       })
     },
     // 阅读指定id的文章

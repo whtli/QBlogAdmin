@@ -13,11 +13,13 @@
             <i class="el-icon-timer m-read-time"><span> 阅读时长：{{ blogForm.readTime }} 分钟</span></i>
           </div>
         </el-form-item>
-        <el-form-item>
-          <el-col :span="11" style="">
-              <el-button ><span> 分类：{{ category.categoryName }}</span></el-button>
+        <el-form-item align="center">
+          <el-col :span="11">
+              <span>   分类：</span>
+              <el-button ><span> {{ category.categoryName }}</span></el-button>
           </el-col>
           <el-col :span="11">
+            <span>     标签：</span>
             <el-button round v-for="(tag, index) in tagList" :key="index">{{ tag.tagName }}</el-button>
           </el-col>
         </el-form-item>
