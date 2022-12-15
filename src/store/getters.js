@@ -4,7 +4,6 @@ const getters = {
   token: state => state.user.token,
   avatar: state => state.user.avatar,
   name: state => state.user.name,
-  getUser: state => state.userInfo,
   visitedViews: state => state.tagsView.visitedViews, // 新增
   cachedViews: state => state.tagsView.cachedViews // 新增
 }

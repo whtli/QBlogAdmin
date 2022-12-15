@@ -18,9 +18,8 @@ router.beforeEach(async(to, from, next) => {
   document.title = getPageTitle(to.meta.title)
 
   // determine whether the user has logged in
-  // const hasToken = getToken()
-  const hasToken = localStorage.getItem('token')
-  console.log('------------ hasToken: ' + hasToken)
+  const hasToken = getToken()
+  // const hasToken = localStorage.getItem('token')
   if (hasToken) {
     if (to.path === '/login') {
       // if is logged in, redirect to the home page
@@ -31,9 +30,11 @@ router.beforeEach(async(to, from, next) => {
       if (hasGetUserInfo) {
         next()
       } else {
-        /*        try {
+        // 以下注释掉
+        /* try {
           // get user info
           await store.dispatch('user/getInfo')
+
           next()
         } catch (error) {
           // remove token and go to login page to re-login
@@ -42,6 +43,7 @@ router.beforeEach(async(to, from, next) => {
           next(`/login?redirect=${to.path}`)
           NProgress.done()
         }*/
+        // 以下为新增
         next()
         NProgress.done()
       }

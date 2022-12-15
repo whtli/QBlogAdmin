@@ -33,9 +33,13 @@ const actions = {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
       login({ username: username.trim(), password: password }).then(response => {
-        const { data } = response
-        commit('SET_TOKEN', data.token)
-        setToken(data.token)
+        // 此处根据后端的返回逻辑，将模板更改为从返回头中获取token
+        const token = response.headers['authorization']
+        /* const userInfo = response.data.data
+        commit('SET_NAME', userInfo.username)
+        commit('SET_AVATAR', userInfo.avatar)
+        commit('SET_TOKEN', token)*/
+        setToken(token)
         resolve()
       }).catch(error => {
         reject(error)

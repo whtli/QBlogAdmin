@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
-import router from '@/router/index'
+// import router from '@/router/index'
 import { getToken } from '@/utils/auth'
 
 // create an axios instance
@@ -15,21 +15,18 @@ const service = axios.create({
 service.interceptors.request.use(
   config => {
     // do something before request is sent
-    /*    if (store.getters.token) {
+    if (store.getters.token) {
       // let each request carry token
       // ['X-Token'] is a custom headers key
       // please modify it according to the actual situation
-      config.headers['X-Token'] = getToken()
-    }*/
-    /* if (store.state.token) {
-      config.headers['Authorization'] = localStorage.getItem('token') // 让每个请求携带自定义token 请根据实际情况自行修改
-      console.log(config)
-    }*/
-
-    if (localStorage.getItem('token')) {
-      config.headers['Authorization'] = localStorage.getItem('token') // 让每个请求携带自定义token 请根据实际情况自行修改
-      console.log(config)
+      // 根据后端的返回内容，将'X-Token'修改为'Authorization'
+      config.headers['Authorization'] = getToken()
     }
+
+    /* if (localStorage.getItem('token')) {
+      config.headers['Authorization'] = localStorage.getItem('token') // 让每个请求携带自定义token 请根据实际情况自行修改
+      console.log(config)
+    }*/
     return config
   },
   error => {
@@ -61,12 +58,12 @@ service.interceptors.response.use(
         type: 'error',
         duration: 5 * 1000
       })
-      if (res.code === 401) {
+      /* if (res.code === 401) {
         console.log('logout as token fail')
         store.commit('REMOVE_INFO')
         router.push('/login')
         // router.push('Login')
-      }
+      }*/
       // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
       if (res.code === 508 || res.code === 512 || res.code === 514) {
         // to re-login
