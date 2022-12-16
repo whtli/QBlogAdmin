@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
-// import router from '@/router/index'
+import router from '@/router/index'
 import { getToken } from '@/utils/auth'
 
 // create an axios instance
@@ -58,12 +58,11 @@ service.interceptors.response.use(
         type: 'error',
         duration: 5 * 1000
       })
-      /* if (res.code === 401) {
-        console.log('logout as token fail')
-        store.commit('REMOVE_INFO')
-        router.push('/login')
-        // router.push('Login')
-      }*/
+      // 如果是401说明没有token，需要重新登陆，直接跳转到重新登录界面
+      if (res.code === 401) {
+        // store.commit('RESET_STATE')
+        router.push('Login')
+      }
       // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
       if (res.code === 508 || res.code === 512 || res.code === 514) {
         // to re-login

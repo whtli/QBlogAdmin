@@ -13,17 +13,21 @@ const getDefaultState = () => {
 const state = getDefaultState()
 
 const mutations = {
-  RESET_STATE: (state) => {
-    Object.assign(state, getDefaultState())
-  },
   SET_TOKEN: (state, token) => {
     state.token = token
+    // 新增将token和用户信息存储到localStorage中的操作
+    localStorage.setItem('token', token)
   },
-  SET_NAME: (state, name) => {
-    state.name = name
+  // 删除原有的单独设置name和avatar功能，新增统一的用户信息存储功能
+  SET_USER_INFO: (state, userInfo) => {
+    state.name = userInfo.username
+    state.avatar = userInfo.avatar
+    localStorage.setItem('userInfo', userInfo)
   },
-  SET_AVATAR: (state, avatar) => {
-    state.avatar = avatar
+  RESET_STATE: (state) => {
+    Object.assign(state, getDefaultState())
+    // 新增清空localStorage的操作
+    localStorage.clear()
   }
 }
 
@@ -35,10 +39,9 @@ const actions = {
       login({ username: username.trim(), password: password }).then(response => {
         // 此处根据后端的返回逻辑，将模板更改为从返回头中获取token
         const token = response.headers['authorization']
-        /* const userInfo = response.data.data
-        commit('SET_NAME', userInfo.username)
-        commit('SET_AVATAR', userInfo.avatar)
-        commit('SET_TOKEN', token)*/
+        const userInfo = response.data.data
+        commit('SET_TOKEN', token)
+        commit('SET_USER_INFO', JSON.stringify(userInfo))
         setToken(token)
         resolve()
       }).catch(error => {
@@ -51,7 +54,7 @@ const actions = {
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
       getInfo(state.token).then(response => {
-        const { data } = response
+        /* const { data } = response
 
         if (!data) {
           return reject('Verification failed, please Login again.')
@@ -61,7 +64,10 @@ const actions = {
 
         commit('SET_NAME', name)
         commit('SET_AVATAR', avatar)
-        resolve(data)
+        resolve(data)*/
+        const userInfo = response.data.data
+        commit('SET_USER_INFO', JSON.stringify(userInfo))
+        resolve()
       }).catch(error => {
         reject(error)
       })

@@ -1894,6 +1894,7 @@
 + 在[index](src/router/index.js)中添加路由
 
 ## 17. 恢复使用模板的登录逻辑，减少代码冗余
++ [Login.vue](./src/views/login/Login.vue)与[Navbar](src/layout/components/Navbar.vue)中的logout保持模板内容不变
 
 + [permission.js](./src/permission.js)中的router.beforeEach
   ```js
@@ -1917,10 +1918,10 @@
         if (hasGetUserInfo) {
           next()
         } else {
-          // 以下注释掉
-          /*        try {
+          try {
             // get user info
-            await store.dispatch('user/getInfo')  // 也可以只注释这一行（主要是它会引起报错提示，则整个代码块不需要被整体注释，且不需要添加块末的两行新增）
+            await store.dispatch('user/getInfo')
+  
             next()
           } catch (error) {
             // remove token and go to login page to re-login
@@ -1928,9 +1929,10 @@
             Message.error(error || 'Has Error')
             next(`/login?redirect=${to.path}`)
             NProgress.done()
-          }*/
-          next()            // 新增
-          NProgress.done()  // 新增
+          }
+          // 如果不使用上方的try，则将其注释掉并新增以下两行
+          // next()
+          // NProgress.done()
         }
       }
     } else {
@@ -1948,29 +1950,71 @@
   ```
 
 
-+ [Login.vue](./src/views/login/Login.vue)与[Navbar](src/layout/components/Navbar.vue)中的logout保持模板内容不变
-
-
 + modules中的文件
-  - 先修改[user.js](src/store/modules/user.js)中的login接口
-    ```javascript
-      // user login
-      login({ commit }, userInfo) {
-        const { username, password } = userInfo
-        return new Promise((resolve, reject) => {
-          login({ username: username.trim(), password: password }).then(response => {
-            // 此处根据后端的返回逻辑，将模板更改为从返回头中获取token
-            const token = response.headers['authorization']
-            commit('SET_TOKEN', token)
-            setToken(token)
-            resolve()
-          }).catch(error => {
-            reject(error)
-          })
+  - [user.js](src/store/modules/user.js)中的login与getInfo接口
+  ```javascript
+    // user login
+    login({ commit }, userInfo) {
+      const { username, password } = userInfo
+      return new Promise((resolve, reject) => {
+        login({ username: username.trim(), password: password }).then(response => {
+          // 此处根据后端的返回逻辑，将模板更改为从返回头中获取token
+          const token = response.headers['authorization']
+          const userInfo = response.data.data
+          commit('SET_TOKEN', token)
+          commit('SET_USER_INFO', JSON.stringify(userInfo))
+          setToken(token)
+          resolve()
+        }).catch(error => {
+          reject(error)
         })
-      }
-    ```
-  - 其他的暂时不动，至于getInfo其实也用得到，后续再修改
+      })
+    },
+    // get user info
+    getInfo({ commit, state }) {
+      return new Promise((resolve, reject) => {
+        getInfo(state.token).then(response => {
+          /* const { data } = response
+  
+          if (!data) {
+            return reject('Verification failed, please Login again.')
+          }
+  
+          const { name, avatar } = data
+  
+          commit('SET_NAME', name)
+          commit('SET_AVATAR', avatar)
+          resolve(data)*/
+          const userInfo = response.data.data
+          commit('SET_USER_INFO', JSON.stringify(userInfo))
+          resolve()
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    }
+  ```
+  - [user.js](src/store/modules/user.js)中的mutations
+  ```javascript
+  const mutations = {
+    SET_TOKEN: (state, token) => {
+      state.token = token
+      // 新增将token和用户信息存储到localStorage中的操作
+      localStorage.setItem('token', token)
+    },
+    // 删除原有的单独设置name和avatar功能，新增统一的用户信息存储功能
+    SET_USER_INFO: (state, userInfo) => {
+      state.name = userInfo.username
+      state.avatar = userInfo.avatar
+      localStorage.setItem('userInfo', userInfo)
+    },
+    RESET_STATE: (state) => {
+      Object.assign(state, getDefaultState())
+      // 新增清空localStorage的操作
+      localStorage.clear()
+    }
+  }
+  ```
 
 + [request.js](./src/utils/request.js)
   ```javascript
@@ -2000,6 +2044,63 @@
   )
   ```
 
+  ```javascript
+  // response interceptor
+  service.interceptors.response.use(
+    /**
+     * If you want to get http information such as headers or status
+     * Please return  response => response
+    */
+  
+    /**
+     * Determine the request status by custom code
+     * Here is just an example
+     * You can also judge the status by HTTP Status Code
+     */
+    response => {
+      const res = response.data
+  
+      // if the custom code is not 20000, it is judged as an error.
+      if (res.code !== 200) {
+        Message({
+          message: res.message || 'Error',
+          type: 'error',
+          duration: 5 * 1000
+        })
+        // 如果是401说明没有token，需要重新登陆，直接跳转到重新登录界面
+        if (res.code === 401) {
+          // store.commit('RESET_STATE')
+          router.push('Login')
+        }
+        // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
+        if (res.code === 508 || res.code === 512 || res.code === 514) {
+          // to re-login
+          MessageBox.confirm('You have been logged out, you can cancel to stay on this page, or log in again', 'Confirm logout', {
+            confirmButtonText: 'Re-Login',
+            cancelButtonText: 'Cancel',
+            type: 'warning'
+          }).then(() => {
+            store.dispatch('user/resetToken').then(() => {
+              location.reload()
+            })
+          })
+        }
+        return Promise.reject(new Error(res.message || 'Error'))
+      } else {
+        return response
+      }
+    },
+    error => {
+      console.log('err: ' + error) // for debug
+      Message({
+        message: error.message,
+        type: 'error',
+        duration: 5 * 1000
+      })
+      return Promise.reject(error)
+    }
+  )
+  ```
 
 + 接口文件[user.js](src/api/user.js)
   ```javascript
@@ -2015,7 +2116,7 @@
   
   export function getInfo(token) {
     return request({
-      url: '/info',
+      url: '/getInfo',
       method: 'get',
       params: { token }
     })

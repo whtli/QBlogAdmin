@@ -30,8 +30,7 @@ router.beforeEach(async(to, from, next) => {
       if (hasGetUserInfo) {
         next()
       } else {
-        // 以下注释掉
-        /* try {
+        try {
           // get user info
           await store.dispatch('user/getInfo')
 
@@ -42,10 +41,10 @@ router.beforeEach(async(to, from, next) => {
           Message.error(error || 'Has Error')
           next(`/login?redirect=${to.path}`)
           NProgress.done()
-        }*/
-        // 以下为新增
-        next()
-        NProgress.done()
+        }
+        // 如果不使用上方的try，则将其注释掉并新增以下两行
+        // next()
+        // NProgress.done()
       }
     }
   } else {
