@@ -5,24 +5,15 @@
       <el-input placeholder="请输入分类id" v-model="queryInfo.categoryId" :clearable="true" style="width: 200px" suffix-icon="el-icon-document"></el-input>
       <el-button @click.native.prevent="getBlogList" style="margin-left: 5px" type="primary">查询</el-button>
     </div>
-    <div style="margin: 10px 0; margin-left: 1%">
-      <el-table :data="blogList" border :stripe="true" :height="660">
-        <el-table-column type="selection" width="55"> </el-table-column>
-        <!--<el-table-column label="序号" prop="id" width="50"> </el-table-column>-->
-        <el-table-column label="标题" prop="title" width="100"> </el-table-column>
-        <el-table-column label="描述" prop="description" width="200" :show-overflow-tooltip="true"> </el-table-column>
-        <el-table-column label="创建时间" prop="createTime" width="200"> </el-table-column>
-        <el-table-column label="更新时间" prop="updateTime" width="200"> </el-table-column>
-        <el-table-column label="浏览量" prop="views" width="60"> </el-table-column>
-        <el-table-column label="字数" prop="words" width="50"> </el-table-column>
-        <el-table-column label="分类" prop="categoryName" width="100"> </el-table-column>
-        <el-table-column label="作者" prop="userId" width="50"> </el-table-column>
-        <el-table-column label="操作">
-          <template v-slot="scope">
-            <el-button type="primary" icon="el-icon-view" @click="readBlog(scope.row.id)"> 查看</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+
+    <div style="margin: 10px 0">
+      <div style="padding: 10px 0; border-bottom: 1px dashed #ccc" v-for="item in blogList" :key="item.id">
+        <div class="pd-10" style="font-size: 20px; color: #3F5EFB; cursor: pointer" @click="readBlog(item.id)">{{ item.title }}</div>
+        <div style="font-size: 14px; margin-top: 10px">
+          <i class="el-icon-user-solid"></i> <span>{{ item.userId }}</span>
+          <i class="el-icon-time" style="margin-left: 10px"></i> <span>{{ item.createTime }}</span>
+        </div>
+      </div>
     </div>
 
     <div style="padding: 10px 0">
@@ -31,7 +22,7 @@
         @current-change="handleCurrentChange"
         :current-page="pageNum"
         :page-size="pageSize"
-        layout="total, prev, pager, next, jumper"
+        layout="total, prev, pager, next"
         :total="total">
       </el-pagination>
     </div>
