@@ -2131,3 +2131,180 @@
   
   ```
 
+## 18. 添加博客评论功能，实现多级评论
++ 调整[BlogRead.vue](src/views/blog/BlogRead.vue)
+  ```vue
+      <!-- 写评论区域-->
+      <div style="margin-left: 10%; margin-right: 10%">
+        <!-- 写评论-->
+        <div>
+          <div style="border-bottom: 1px solid orangered; padding: 10px 0; font-size: 20px">评论</div>
+          <div style="padding: 10px 0">
+            <el-input size="small" type="textarea" v-model="commentForm.content"/>
+          </div>
+          <div class="margin: 10px 0" style="text-align: right">
+            <el-button type="primary" size="small" @click="saveComment">评论</el-button>
+          </div>
+        </div>
+        <!--  评论列表-->
+        <div>
+          <div v-for="item in comments" :key="item.id" style="border-bottom: 1px solid #ccc; padding: 10px 0; ">
+            <div style="display: flex">
+              <!-- 头像-->
+              <div style="width: 100px; text-align: center">
+                <el-image :src="'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif?imageView2/1/w/80/h/80'" style="width: 50px; height: 50px; border-radius: 50%"></el-image>
+              </div>
+              <!-- 内容-->
+              <div style="flex: 1; font-size: 14px; padding: 5px 0; line-height: 25px">
+                <b>{{ item.username }}：</b>
+                <span>{{ item.content }}</span>
+  
+                <div style="display: flex; line-height: 20px; margin-top: 5px">
+                  <div style="width: 200px;">
+                    <i class="el-icon-time"></i><span style="margin-left: 5px">{{ item.time }}</span>
+                  </div>
+                  <div style="text-align: right; flex: 1">
+                    <el-button style="margin-left: 5px" type="text" @click="handleReply(item.id)">回复</el-button>
+                    <el-button type="text" style="color: red" @click="deleteComment(item.id)" v-if="userInfo.id === item.userId">删除</el-button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- 回复列表-->
+            <div v-if="item.children.length"  style="padding-left: 200px;">
+              <div v-for="subItem in item.children" :key="subItem.id"  style="background-color: #f0f0f0; padding: 5px 20px">
+                <!-- 内容-->
+                <div style="font-size: 14px; padding: 5px 0; line-height: 25px">
+                  <div>
+                    <b style="color: #3a8ee6" v-if="subItem.pusername">@{{ subItem.pusername }}</b>
+                  </div>
+                  <div style="padding-left: 5px">
+                    <b>{{ subItem.username }}：</b>
+                    <span>{{ subItem.content }}</span>
+                  </div>
+                  <div style="display: flex; line-height: 20px; margin-top: 5px; padding-left: 5px">
+                    <div style="width: 200px;">
+                      <i class="el-icon-time"></i><span style="margin-left: 5px">{{ subItem.time }}</span>
+                    </div>
+                    <div style="text-align: right; flex: 1">
+                      <el-button style="margin-left: 5px" type="text" @click="handleReply(subItem.id)">回复</el-button>
+                      <el-button type="text" style="color: red" @click="deleteComment(subItem.id)" v-if="userInfo.id === subItem.userId">删除</el-button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 回复评论弹窗-->
+      <el-dialog title="回复" :visible.sync="dialogFormVisible" width="50%" >
+        <el-form label-width="80px" size="small">
+          <el-form-item label="回复内容">
+            <el-input type="textarea" v-model="commentForm.contentReply" autocomplete="off"></el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible=false" size="small">取 消</el-button>
+          <el-button type="primary" @click="saveComment"  size="small">确 定</el-button>
+        </div>
+      </el-dialog>
+  
+  ```
+
+  ```javascript
+  // 导入评论功能相关的接口
+  import { loadComment, saveComment, deleteCommentById } from '@/api/front/Comment'
+  
+  export default {
+    name: 'BlogRead',
+    data() {
+      return {
+        // 以下为新增，原有的省略了
+        userInfo: localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : {},
+        blogId: this.$route.params.id,
+        comments: [],
+        commentForm: {},
+        dialogFormVisible: false
+      }
+    },
+    created() {
+      // 当界面被创建时，监听是否有路由参数
+      // 若有说明是阅读指定博客，此时需要先查询并显示
+      // 若无说明是新增博客
+      if (this.$route.params.id) {
+        this.getBlogInfo(this.$route.params.id)
+        this.loadComment(this.$route.params.id)
+      }
+    },
+    methods: {
+      loadComment(blogId) {
+        loadComment(blogId).then(res => {
+          this.comments = res.data.data
+        })
+      },
+      saveComment() {
+        if (!this.userInfo.id) {
+          this.$message.warning('请登录后操作')
+          return
+        }
+        this.commentForm.blogId = this.blogId
+        if (this.commentForm.contentReply) {
+          this.commentForm.content = this.commentForm.contentReply
+        }
+        saveComment(this.commentForm).then(res => {
+          this.$message.success('评论成功')
+          // 重置评论内容
+          this.commentForm = {}
+          // 刷新评论列表
+          this.loadComment(this.blogId)
+          // 关闭评论窗口
+          this.dialogFormVisible = false
+        }).catch(() => {
+          this.$message.error('评论失败')
+        })
+      },
+      deleteComment(id) {
+        deleteCommentById(id).then(res => {
+          this.$message.success('删除成功')
+          this.loadComment(this.blogId)
+        }).catch(() => {
+          this.$message.error('删除失败')
+        })
+      },
+      handleReply(pid) {
+        this.commentForm = { pid: pid }
+        this.dialogFormVisible = true
+      }
+    }
+  }
+  ```
+
++ 新增评论功能相关的接口见[Comment.js](src/api/front/Comment.js)
+  ```javascript
+  import request from '@/utils/request'
+  
+  export function loadComment(blogId) {
+    return request({
+      url: '/front/loadComment',
+      method: 'get',
+      params: { blogId }
+    })
+  }
+  
+  export function saveComment(commentForm) {
+    return request({
+      url: '/front/saveComment',
+      method: 'post',
+      data: commentForm
+    })
+  }
+  
+  export function deleteCommentById(id) {
+    return request({
+      url: '/front/deleteCommentById',
+      method: 'delete',
+      params: { id }
+    })
+  }
+  ```
