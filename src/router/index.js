@@ -129,6 +129,26 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/access',
+    component: Layout,
+    name: 'Access Management',
+    meta: { title: '权限管理', icon: 'nested' },
+    children: [
+      {
+        path: 'role',
+        name: 'Role',
+        component: () => import('@/views/role/Role'),
+        meta: { title: '角色管理', icon: 'el-icon-s-custom' }
+      },
+      {
+        path: 'menu',
+        name: 'Menu',
+        component: () => import('@/views/role/Menu'),
+        meta: { title: '菜单管理', icon: 'el-icon-s-custom' }
+      }
+    ]
+  },
+  {
     path: '/front',
     component: Layout,
     children: [
