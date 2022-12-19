@@ -1889,7 +1889,7 @@
 + 
 
 ## 16. 添加访客界面，用于测试后端的redis
-+ 界面见[Front.vue](src/views/front/Front.vue)组件
++ 界面见[Front.vue](src/views/front/Index.vue)组件
 + 接口见[Front.js](src/api/front/Front.js)文件
 + 在[index](src/router/index.js)中添加路由
 
@@ -2102,7 +2102,7 @@
   )
   ```
 
-+ 接口文件[user.js](src/api/user.js)
++ 接口文件[user.js](src/api/system/User.js)
   ```javascript
   import request from '@/utils/request'
   
@@ -2308,3 +2308,100 @@
     })
   }
   ```
+
+## 19. 添加系统管理相关界面
+### 19.1 用户管理
++ 新增组件[User.vue](src/views/system/User.vue)
+  - 编辑用户信息的对话框代码
+  ```vue
+          <el-table-column label="操作" width="180" align="left" fixed="right">
+            <template slot-scope="scope">
+              <el-button type="success" @click="editUser(scope.row)" class="el-icon-edit">编辑</el-button>
+            </template>
+          </el-table-column>
+  ```
+  ```javascript
+      editUser(row) {
+        this.userForm = JSON.parse(JSON.stringify(row))
+        this.dialogFormVisible = true
+      },
+  ```
+
++ 复用接口[User.js](src/api/system/User.js)
+
+### 19.2 角色管理
++ 新增组件[Role.vue](src/views/system/Role.vue)
+  - 分配菜单权限的功能，使用了el-tree组件，实现层级权限关系的展示与分配
+  ```vue
+        <el-table-column label="操作" width="280" align="center">
+          <template slot-scope="scope">
+            <el-button type="info" class="el-icon-menu" @click="changeRight(scope.row)">分配菜单</el-button>
+          </template>
+        </el-table-column>
+  ```
+  ```javascript
+      loadAllMenuIds() {
+        // 获取所有的菜单id
+        getAllMenuIds().then(res => {
+          this.allMenuIds = res.data.data
+        })
+      },
+      changeRight(role) {
+        this.roleId = role.id
+        // 查询并展示当前角色已有的菜单权限
+        getMenusByRoleId(this.roleId).then(res => {
+          this.checks = res.data.data
+          this.allMenuIds.forEach(id => {
+            // 此处的if和else是为了避免出现一级菜单被选中后其下的二级菜单都会被选中的问题
+            if (this.checks.includes(id)) {
+              this.$nextTick(() => {
+                this.$refs.tree.setChecked(id, true)
+              })
+            } else {
+              this.$nextTick(() => {
+                this.$refs.tree.setChecked(id, false)
+              })
+            }
+          })
+          this.dialogMenuVisible = true
+        })
+      }
+  ```
++ 复用接口[Role.js](src/api/system/Role.js)
+
+### 19.3 菜单管理
++ 新增组件[Menu.vue](src/views/system/Menu.vue)
++ 复用接口[Menu.js](src/api/system/Menu.js)
+
+### 19.4 添加路由
+在[router/index.js](src/router/index.js)中为以上组件添加新的路由
+```javascript
+export const constantRoutes = [
+  {
+    path: '/system',
+    component: Layout,
+    name: 'System Management',
+    meta: { title: '系统管理', icon: 'nested' },
+    children: [
+      {
+        path: 'user',
+        name: 'User',
+        component: () => import('@/views/system/User'),
+        meta: { title: '用户管理', icon: 'el-icon-s-custom' }
+      },
+      {
+        path: 'role',
+        name: 'Role',
+        component: () => import('@/views/system/Role'),
+        meta: { title: '角色管理', icon: 'el-icon-s-custom' }
+      },
+      {
+        path: 'menu',
+        name: 'Menu',
+        component: () => import('@/views/system/Menu'),
+        meta: { title: '菜单管理', icon: 'el-icon-s-custom' }
+      }
+    ]
+  },
+]
+```

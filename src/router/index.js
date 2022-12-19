@@ -104,8 +104,11 @@ export const constantRoutes = [
   },
 
   {
-    path: '/statistic',
+    path: '/data',
     component: Layout,
+    alwaysShow: true,
+    name: 'Data',
+    meta: { title: 'Data Management', icon: 'el-icon-s-data' },
     children: [
       {
         path: 'statistic',
@@ -119,6 +122,9 @@ export const constantRoutes = [
   {
     path: '/log',
     component: Layout,
+    alwaysShow: true,
+    name: 'Log',
+    meta: { title: 'Log Management', icon: 'el-icon-s-data' },
     children: [
       {
         path: 'operationLog',
@@ -129,21 +135,27 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/access',
+    path: '/system',
     component: Layout,
-    name: 'Access Management',
-    meta: { title: '权限管理', icon: 'nested' },
+    name: 'System Management',
+    meta: { title: '系统管理', icon: 'nested' },
     children: [
+      {
+        path: 'user',
+        name: 'User',
+        component: () => import('@/views/system/User'),
+        meta: { title: '用户管理', icon: 'el-icon-s-custom' }
+      },
       {
         path: 'role',
         name: 'Role',
-        component: () => import('@/views/role/Role'),
+        component: () => import('@/views/system/Role'),
         meta: { title: '角色管理', icon: 'el-icon-s-custom' }
       },
       {
         path: 'menu',
         name: 'Menu',
-        component: () => import('@/views/role/Menu'),
+        component: () => import('@/views/system/Menu'),
         meta: { title: '菜单管理', icon: 'el-icon-s-custom' }
       }
     ]
@@ -151,12 +163,15 @@ export const constantRoutes = [
   {
     path: '/front',
     component: Layout,
+    alwaysShow: true,
+    name: 'Front',
+    meta: { title: '前端', icon: 'el-icon-s-data' },
     children: [
       {
-        path: 'front',
-        name: 'Front',
-        component: () => import('@/views/front/Front'),
-        meta: { title: 'Front', icon: 'el-icon-s-data' }
+        path: 'index',
+        name: 'Index',
+        component: () => import('@/views/front/Index'),
+        meta: { title: '首页', icon: 'el-icon-s-data' }
       }
     ]
   },

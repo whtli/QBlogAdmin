@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-export function save(form) {
+export function saveOrUpdate(form) {
   return request({
     url: '/menu/save',
     method: 'POST',
@@ -13,6 +13,21 @@ export function getMenuList(menuName) {
     url: '/menu/getMenuList',
     method: 'get',
     params: { menuName }
+  })
+}
+
+export function getAllMenuIds() {
+  return request({
+    url: '/menu/getAllMenuIds',
+    method: 'get'
+  })
+}
+
+export function getMenusByRoleId(roleId) {
+  return request({
+    url: '/menu/getMenusByRoleId',
+    method: 'get',
+    params: { roleId }
   })
 }
 
