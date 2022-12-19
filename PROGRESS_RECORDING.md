@@ -2346,6 +2346,18 @@
           this.allMenuIds = res.data.data
         })
       },
+      updateRoleMenu() {
+        const params = {}
+        params.roleId = this.roleId
+        // 此处通过getCheckedKeys获取手动选中的节点id，通过getHalfCheckedKeys获取未全选状态下的一级节点id
+        params.menuIds = this.$refs.tree.getCheckedKeys().concat(this.$refs.tree.getHalfCheckedKeys())
+        updateRoleMenu(params).then(res => {
+          this.$message.success('绑定成功')
+          this.dialogMenuVisible = false
+        }).catch(() => {
+          this.$message.error('绑定失败')
+        })
+      },
       changeRight(role) {
         this.roleId = role.id
         // 查询并展示当前角色已有的菜单权限
@@ -2367,11 +2379,11 @@
         })
       }
   ```
-+ 复用接口[Role.js](src/api/system/Role.js)
++ 新增接口[Role.js](src/api/system/Role.js)
 
 ### 19.3 菜单管理
 + 新增组件[Menu.vue](src/views/system/Menu.vue)
-+ 复用接口[Menu.js](src/api/system/Menu.js)
++ 新增接口[Menu.js](src/api/system/Menu.js)
 
 ### 19.4 添加路由
 在[router/index.js](src/router/index.js)中为以上组件添加新的路由
