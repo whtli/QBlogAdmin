@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function saveOrUpdate(form) {
   return request({
-    url: '/menu/save',
+    url: '/menu/saveOrUpdate',
     method: 'POST',
     data: form
   })

@@ -180,11 +180,10 @@ export default {
       })
     },
     updateRoleMenu() {
-      console.log('this.$refs.tree.getCheckedKeys() ========= ')
-      console.log(this.$refs.tree.getCheckedKeys())
       const params = {}
       params.roleId = this.roleId
-      params.menuIds = this.$refs.tree.getCheckedKeys()
+      // 此处通过getCheckedKeys获取手动选中的节点id，通过getHalfCheckedKeys获取未全选状态下的一级节点id
+      params.menuIds = this.$refs.tree.getCheckedKeys().concat(this.$refs.tree.getHalfCheckedKeys())
       updateRoleMenu(params).then(res => {
         this.$message.success('绑定成功')
         this.dialogMenuVisible = false
