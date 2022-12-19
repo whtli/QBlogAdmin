@@ -1,7 +1,7 @@
 <template>
   <div>
     <div style="margin: 10px">
-      <el-input v-model="roleName" style="width: 200px" placeholder="请输入名称" suffix-icon="el-icon-search"></el-input>
+      <el-input v-model="roleName" style="width: 200px" placeholder="请输入名称" clearable suffix-icon="el-icon-search"></el-input>
       <el-button class="ml-5" type="primary" @click="loadRoleList">搜索</el-button>
       <el-button type="warning" @click="reset">重置</el-button>
     </div>
@@ -80,7 +80,7 @@
 
 <script>
 import { getRoleList, saveOrUpdate, deleteRoleById, updateRoleMenu } from '@/api/system/Role'
-import { getMenuList, getMenusByRoleId, getAllMenuIds } from '@/api/system/Menu'
+import { getMenuList, getMenusByRoleId } from '@/api/system/Menu'
 
 export default {
   name: 'Role',
@@ -107,7 +107,6 @@ export default {
   created() {
     this.loadRoleList()
     this.loadMenuList()
-    this.loadAllMenuIds()
   },
   methods: {
     handleSizeChange(val) {
@@ -141,12 +140,7 @@ export default {
       // 获取菜单列表
       getMenuList(this.menuName).then(res => {
         this.menuList = res.data.data.menuList
-      })
-    },
-    loadAllMenuIds() {
-      // 获取所有的菜单id
-      getAllMenuIds().then(res => {
-        this.allMenuIds = res.data.data
+        this.allMenuIds = res.data.data.allMenuIds
       })
     },
     reset() {
