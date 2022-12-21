@@ -56,127 +56,6 @@ export const constantRoutes = [
   },
 
   {
-    path: '/blog',
-    component: Layout,
-    redirect: '/blog/list',
-    name: 'Blog',
-    meta: { title: 'Blog Management', icon: 'nested' },
-    children: [
-      {
-        path: 'list',
-        name: 'BlogList',
-        component: () => import('@/views/blog/BlogList'),
-        meta: { title: 'BlogList', icon: 'table' }
-      },
-      {
-        path: 'write',
-        name: 'BlogWrite',
-        component: () => import('@/views/blog/BlogWrite'),
-        meta: { title: 'BlogWrite', icon: 'el-icon-edit' }
-      },
-      {
-        path: 'edit/:id',
-        name: 'BlogEdit',
-        component: () => import('@/views/blog/BlogWrite'),
-        meta: { title: 'BlogEdit', icon: 'el-icon-edit' },
-        hidden: true
-      },
-      {
-        path: 'read/:id',
-        name: 'BlogRead',
-        component: () => import('@/views/blog/BlogRead'),
-        meta: { title: 'BlogRead' },
-        hidden: true
-      },
-      {
-        path: 'category',
-        name: 'Category',
-        component: () => import('@/views/blog/Category'),
-        meta: { title: 'Category', icon: 'table' }
-      },
-      {
-        path: 'tag',
-        name: 'Tag',
-        component: () => import('@/views/blog/Tag'),
-        meta: { title: 'Tag', icon: 'table' }
-      }
-    ]
-  },
-
-  {
-    path: '/data',
-    component: Layout,
-    alwaysShow: true,
-    name: 'Data',
-    meta: { title: 'Data Management', icon: 'el-icon-s-data' },
-    children: [
-      {
-        path: 'statistic',
-        name: 'Statistic',
-        component: () => import('@/views/statistic/Statistic'),
-        meta: { title: 'Data Statistics', icon: 'el-icon-s-data' }
-      }
-    ]
-  },
-
-  {
-    path: '/log',
-    component: Layout,
-    alwaysShow: true,
-    name: 'Log',
-    meta: { title: 'Log Management', icon: 'el-icon-s-data' },
-    children: [
-      {
-        path: 'operationLog',
-        name: 'OperationLog',
-        component: () => import('@/views/log/OperationLog'),
-        meta: { title: 'Operation Log', icon: 'el-icon-s-data' }
-      }
-    ]
-  },
-  {
-    path: '/system',
-    component: Layout,
-    name: 'System Management',
-    meta: { title: '系统管理', icon: 'nested' },
-    children: [
-      {
-        path: 'user',
-        name: 'User',
-        component: () => import('@/views/system/User'),
-        meta: { title: '用户管理', icon: 'el-icon-s-custom' }
-      },
-      {
-        path: 'role',
-        name: 'Role',
-        component: () => import('@/views/system/Role'),
-        meta: { title: '角色管理', icon: 'el-icon-s-custom' }
-      },
-      {
-        path: 'menu',
-        name: 'Menu',
-        component: () => import('@/views/system/Menu'),
-        meta: { title: '菜单管理', icon: 'el-icon-s-custom' }
-      }
-    ]
-  },
-  {
-    path: '/front',
-    component: Layout,
-    alwaysShow: true,
-    name: 'Front',
-    meta: { title: '前端', icon: 'el-icon-s-data' },
-    children: [
-      {
-        path: 'index',
-        name: 'Index',
-        component: () => import('@/views/front/Index'),
-        meta: { title: '首页', icon: 'el-icon-s-data' }
-      }
-    ]
-  },
-
-  {
     path: '/nested',
     component: Layout,
     redirect: '/nested/menu1',
@@ -236,7 +115,7 @@ export const constantRoutes = [
   },
 
   {
-    path: 'external-link',
+    path: '/external-link',
     component: Layout,
     children: [
       {
@@ -261,6 +140,63 @@ const router = createRouter()
 export function resetRouter() {
   const newRouter = createRouter()
   router.matcher = newRouter.matcher // reset router
+}
+
+/**
+ * asyncRoutes
+ * the routes that need to be dynamically loaded based on user roles
+ */
+// TODO: 先单独使用动态路由接受权限列表，再将静态路由和动态路由拼装起来
+// export const asyncRoutes = []
+
+// 注意：刷新页面会导致页面路由重置
+export function setRouterMenus() {
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'))
+  if (userInfo) {
+    const menus = userInfo.menuList
+    if (menus) {
+      // 获取当前的路由对象名称数组
+      const currentRouteNames = router.getRoutes().map(v => v.name)
+      console.log(currentRouteNames)
+      menus.forEach(item => {
+        // 避免重复
+        if (!currentRouteNames.includes(item.name)) {
+          console.log('Add dynamic routers')
+          // 拼装动态路由，外层是一级菜单，内层children是二级菜单
+          const firstLevel = {
+            path: item.path,
+            component: Layout,
+            name: item.name,
+            alwaysShow: item.alwaysShow,
+            meta: {
+              title: item.title,
+              icon: item.icon
+            },
+            children: []
+          }
+          // 处理二级菜单
+          if (item.children) {
+            item.children.forEach(subItem => {
+              const secondLevel = {
+                path: subItem.path.replace('/', ''),
+                name: subItem.name,
+                // component: () => import('@/views' + item.path + '/' + subItem.component),
+                // component: () => import(`@/views'${item.path}/${subItem.component}`),
+                component: resolve => require([`@/views${item.path}/${subItem.component}`], resolve),
+                meta: {
+                  title: subItem.title,
+                  icon: item.icon
+                }
+              }
+              firstLevel.children.push(secondLevel)
+            })
+          }
+          // 动态添加到现在的路由对象中去
+          constantRoutes.push(firstLevel)
+        }
+      })
+    }
+  }
 }
 
 export default router

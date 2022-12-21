@@ -1,6 +1,6 @@
 import { login, logout, getInfo } from '@/api/system/User'
 import { getToken, setToken, removeToken } from '@/utils/auth'
-import { resetRouter } from '@/router'
+import { resetRouter, setRouterMenus } from '@/router'
 
 const getDefaultState = () => {
   return {
@@ -43,6 +43,8 @@ const actions = {
         commit('SET_TOKEN', token)
         commit('SET_USER_INFO', JSON.stringify(userInfo))
         setToken(token)
+        setRouterMenus()
+        resetRouter()
         resolve()
       }).catch(error => {
         reject(error)
@@ -67,6 +69,8 @@ const actions = {
         resolve(data)*/
         const userInfo = response.data.data
         commit('SET_USER_INFO', JSON.stringify(userInfo))
+        setRouterMenus()
+        resetRouter()
         resolve()
       }).catch(error => {
         reject(error)

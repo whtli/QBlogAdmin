@@ -2417,3 +2417,108 @@ export const constantRoutes = [
   },
 ]
 ```
+
+## 20. 添加动态路由
++ 在[router/index.js](src/router/index.js)中添加拼装动态路由的方法
+  ```javascript
+  // 注意：刷新页面会导致页面路由重置
+  export function setRouterMenus() {
+    const userInfo = JSON.parse(localStorage.getItem('userInfo'))
+    if (userInfo) {
+      const menus = userInfo.menuList
+      if (menus) {
+        // 获取当前的路由对象名称数组
+        const currentRouteNames = router.getRoutes().map(v => v.name)
+        menus.forEach(item => {
+          // 避免重复
+          if (!currentRouteNames.includes(item.name)) {
+            console.log('Add dynamic routers')
+            // 拼装动态路由，外层是一级菜单，内层children是二级菜单
+            const firstLevel = {
+              path: item.path,
+              component: Layout,
+              name: item.name,
+              alwaysShow: item.alwaysShow,
+              meta: {
+                title: item.title,
+                icon: item.icon
+              },
+              children: []
+            }
+            // 处理二级菜单
+            if (item.children) {
+              item.children.forEach(subItem => {
+                const secondLevel = {
+                  path: subItem.path.replace('/', ''),
+                  name: subItem.name,
+                  // component: () => import('@/views' + item.path + '/' + subItem.component),
+                  // component: () => import(`@/views'${item.path}/${subItem.component}`),
+                  component: resolve => require([`@/views${item.path}/${subItem.component}`], resolve),
+                  meta: {
+                    title: subItem.title,
+                    icon: item.icon
+                  }
+                }
+                firstLevel.children.push(secondLevel)
+              })
+            }
+            // 动态添加到现在的路由对象中去
+            constantRoutes.push(firstLevel)
+          }
+        })
+      }
+    }
+  }
+  ```
+
++ 在[store/modules/user.js](src/store/modules/user.js)中的登录和获取用户信息方法中添加更新路由的操作
+  ```javascript
+  import { resetRouter, setRouterMenus } from '@/router'
+  const actions = {
+    // user login
+    login({ commit }, userInfo) {
+      const { username, password } = userInfo
+      return new Promise((resolve, reject) => {
+        login({ username: username.trim(), password: password }).then(response => {
+          // 此处根据后端的返回逻辑，将模板更改为从返回头中获取token
+          const token = response.headers['authorization']
+          const userInfo = response.data.data
+          commit('SET_TOKEN', token)
+          commit('SET_USER_INFO', JSON.stringify(userInfo))
+          setToken(token)
+          setRouterMenus()
+          resetRouter()
+          resolve()
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+  
+    // get user info
+    getInfo({ commit, state }) {
+      return new Promise((resolve, reject) => {
+        getInfo(state.token).then(response => {
+          /* const { data } = response
+  
+          if (!data) {
+            return reject('Verification failed, please Login again.')
+          }
+  
+          const { name, avatar } = data
+  
+          commit('SET_NAME', name)
+          commit('SET_AVATAR', avatar)
+          resolve(data)*/
+          const userInfo = response.data.data
+          commit('SET_USER_INFO', JSON.stringify(userInfo))
+          setRouterMenus()
+          resetRouter()
+          resolve()
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+  }
+  ```
