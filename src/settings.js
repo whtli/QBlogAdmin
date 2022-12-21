@@ -1,6 +1,6 @@
 module.exports = {
 
-  title: 'Vue Admin Template',
+  title: '地质大数据与人工智能信息平台',
   tagsView: true, // 新增
   /**
    * @type {boolean} true | false

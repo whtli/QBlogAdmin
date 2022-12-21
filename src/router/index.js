@@ -51,7 +51,7 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard', affix: true }
+      meta: { title: '首页', icon: 'dashboard', affix: true }
     }]
   },
 
@@ -61,7 +61,7 @@ export const constantRoutes = [
     redirect: '/nested/menu1',
     name: 'Nested',
     meta: {
-      title: 'Page Management',
+      title: '界面管理',
       icon: 'el-icon-menu'
     },
     children: [
@@ -120,7 +120,7 @@ export const constantRoutes = [
     children: [
       {
         path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-        meta: { title: 'External Link', icon: 'link' }
+        meta: { title: '外链', icon: 'link' }
       }
     ]
   },
@@ -168,6 +168,7 @@ export function setRouterMenus() {
             component: Layout,
             name: item.name,
             alwaysShow: item.alwaysShow,
+            hidden: item.hidden,
             meta: {
               title: item.title,
               icon: item.icon
@@ -179,10 +180,11 @@ export function setRouterMenus() {
             item.children.forEach(subItem => {
               const secondLevel = {
                 path: subItem.path.replace('/', ''),
-                name: subItem.name,
                 // component: () => import('@/views' + item.path + '/' + subItem.component),
                 // component: () => import(`@/views'${item.path}/${subItem.component}`),
                 component: resolve => require([`@/views${item.path}/${subItem.component}`], resolve),
+                name: subItem.name,
+                hidden: subItem.hidden,
                 meta: {
                   title: subItem.title,
                   icon: item.icon
