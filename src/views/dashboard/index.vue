@@ -1,9 +1,16 @@
 <template>
   <div class="dashboard-container">
-    <div class="dashboard-text">name: {{ name }}</div>
+    <div class="dashboard-text">当前登录用户: {{ name }}</div>
     <div>
       <el-button @click="testConnection"><label>{{ connection }}</label></el-button>
     </div>
+    <h3>首页</h3>
+    <h3>数据中心</h3>
+    <h3>数据产品</h3>
+    <h3>大数据分析与人工智能</h3>
+    <h3>项目综合</h3>
+    <h3>专项新闻</h3>
+    <h3>关于我们</h3>
   </div>
 </template>
 
@@ -15,7 +22,7 @@ export default {
   name: 'Dashboard',
   data() {
     return {
-      connection: 'whtli'
+      connection: JSON.parse(localStorage.getItem('userInfo')).username
     }
   },
   methods: {

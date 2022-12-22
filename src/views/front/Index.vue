@@ -20,8 +20,8 @@
       <el-pagination
         background
         @current-change="handleCurrentChange"
-        :current-page="pageNum"
-        :page-size="pageSize"
+        :current-page="queryInfo.pageNum"
+        :page-size="queryInfo.pageSize"
         layout="total, prev, pager, next"
         :total="total">
       </el-pagination>
@@ -38,11 +38,11 @@ export default {
     return {
       queryInfo: {
         title: '',
-        categoryId: null
+        categoryId: null,
+        pageNum: 1,
+        pageSize: 10
       },
       total: 0,
-      pageNum: 1,
-      pageSize: 10,
       blogList: []
     }
   },
@@ -57,19 +57,23 @@ export default {
     }
   },
   methods: {
+    handleSizeChange(val) {
+      // 每页显示的条数
+      this.queryInfo.pageSize = val
+      this.getBlogList()
+      console.log(`每页 ${val} 条`)
+    },
     handleCurrentChange(val) {
       // 显示第几页
-      this.pageNum = val
+      this.queryInfo.pageNum = val
       this.getBlogList()
       console.log(`当前页: ${val}`)
     },
     // 查询博客列表
     getBlogList() {
-      // console.log('get blog list ... ')
-      // console.log(this.queryInfo)
       getBlogList(this.queryInfo).then(res => {
-        this.blogList = res.data.data
-        this.total = this.blogList.length
+        this.blogList = res.data.data.blogList
+        this.total = res.data.data.total
       })
     },
     // 阅读指定id的文章

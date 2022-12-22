@@ -67,7 +67,7 @@
         :default-checked-keys="checks"
       >
         <span slot-scope="{ node, data }" class="custom-tree-node">
-          <span :class="data.icon"> {{ data.name }}</span>
+          <span :class="data.icon"> {{ data.title }}</span>
         </span>
       </el-tree>
       <div slot="footer" class="dialog-footer">
