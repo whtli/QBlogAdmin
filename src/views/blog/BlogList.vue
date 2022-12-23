@@ -1,10 +1,22 @@
 <template>
   <div>
     <div style="padding: 10px 0; margin-left: 1%">
-      <el-input placeholder="请输入标题" v-model="queryInfo.title" :clearable="true" style="width: 200px" suffix-icon="el-icon-document-remove"></el-input>
-      <el-input placeholder="请输入分类id" v-model="queryInfo.categoryId" :clearable="true" style="width: 200px" suffix-icon="el-icon-document"></el-input>
+      <el-input placeholder="请输入标题" v-model="queryInfo.title" clearable style="width: 200px" suffix-icon="el-icon-document-remove"></el-input>
+      <el-select v-model="queryInfo.categoryId" clearable placeholder="请选择分类" style="width: 200px" suffix-icon="el-icon-document">
+        <el-option v-for="item in categoryList" :key="item.categoryName" :label="item.categoryName" :value="item.id">
+          {{ item.categoryName }}
+        </el-option>
+      </el-select>
+      <el-select v-model="queryInfo.tagIds" placeholder="请选择标签" clearable filterable multiple style="width: 200px">
+        <el-option v-for="item in tagList" :key="item.id" :label="item.tagName" :value="item.id"></el-option>
+      </el-select>
+      <!--<el-select v-model="queryInfo.tagId" clearable placeholder="请选择分类名" style="width: 200px" suffix-icon="el-icon-document">
+        <el-option v-for="item in tagList" :key="item.tagName" :label="item.tagName" :value="item.id">
+          {{ item.tagName }}
+        </el-option>
+      </el-select>-->
       <el-button @click.native.prevent="getBlogList" style="margin-left: 5px" type="primary">查询</el-button>
-<!--      <el-button @click.native.prevent="getBlogList" style="margin-left: 5px" type="primary">刷新列表</el-button>-->
+      <el-button type="warning" @click="reset">重置</el-button>
     </div>
     <div style="margin-left: 10px; width: 50%; display: flex; justify-content: space-between ">
       <el-button type="primary" @click="toBlogWritePage"><i class="el-icon-circle-plus-outline"></i> 新增</el-button>
@@ -18,9 +30,9 @@
       <el-button type="primary" @click="exportBlogBatch"><i class="el-icon-bottom"></i> 批量（.xlsx）导出</el-button>
     </div>
     <div style="margin: 10px 0; margin-left: 1%">
-      <el-table :data="blogList" border :stripe="true" :height="660" :header-cell-class-name="tableHeaderColor"  @selection-change="handleSelectionChange">
+      <el-table :data="blogList" border stripe v-loading="loading" :height="660" :header-cell-class-name="tableHeaderColor" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55"> </el-table-column>
-        <!--<el-table-column label="序号" prop="id" width="50"> </el-table-column>-->
+        <el-table-column label="序号" prop="id" width="50"> </el-table-column>
         <el-table-column label="标题" prop="title" width="100"> </el-table-column>
         <el-table-column label="描述" prop="description" width="200" :show-overflow-tooltip="true"> </el-table-column>
         <el-table-column label="可见性" prop="published" width="160"><template v-slot="scope">
@@ -68,6 +80,7 @@
 
 <script>
 import { getBlogs, deleteBlogById, deleteBlogBatchByIds, uploadBlog, changeBlogStatusById } from '@/api/blog/BlogList'
+import { getCategoryAndTag } from '@/api/blog/BlogWrite'
 
 export default {
   name: 'BlogList',
@@ -76,11 +89,15 @@ export default {
       queryInfo: {
         title: '',
         categoryId: null,
+        tagIds: [],
         pageNum: 1,
         pageSize: 10
       },
       total: 0,
       blogList: [],
+      categoryList: [],
+      tagList: [],
+      loading: false,
       // 复选框选中的值列表
       selected: [],
       tableHeaderColor: 'tableHeaderColor',
@@ -91,6 +108,10 @@ export default {
       MarkdownFileSize: 1,
       ExcelFileSize: 1
     }
+  },
+  created() {
+    this.getBlogList()
+    this.getCategoryAndTag()
   },
   watch: {
     $route: {
@@ -126,12 +147,18 @@ export default {
     },
     // 查询博客列表
     getBlogList() {
-      // console.log('get blog list ... ')
-      // console.log(this.queryInfo)
+      this.loading = true
       getBlogs(this.queryInfo).then(res => {
         this.blogList = res.data.data.pageData.records
         this.total = res.data.data.total
+        this.loading = false
       })
+    },
+    // 清空查询条件查询所有博客
+    reset() {
+      this.queryInfo.title = ''
+      this.queryInfo.categoryId = null
+      this.getBlogList()
     },
     // 新增博客，跳转到写博客界面
     toBlogWritePage() {
@@ -269,10 +296,14 @@ export default {
     // 上传成功后的回调
     handleSuccess() {
       this.getBlogList()
+    },
+    // 获取分类和标签
+    getCategoryAndTag() {
+      getCategoryAndTag().then(res => {
+        this.categoryList = res.data.data.categoryList
+        this.tagList = res.data.data.tagList
+      })
     }
-  },
-  mounted() {
-    this.getBlogList()
   }
 }
 </script>

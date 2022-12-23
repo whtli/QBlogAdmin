@@ -1,10 +1,5 @@
 <template>
   <div>
-    <div style="margin: 1%">
-      <el-input placeholder="请输入标题" v-model="queryInfo.title" clearable style="width: 200px" suffix-icon="el-icon-document-remove"></el-input>
-      <el-input placeholder="请输入分类id" v-model="queryInfo.categoryId" :clearable="true" style="width: 200px" suffix-icon="el-icon-document"></el-input>
-      <el-button @click.native.prevent="getBlogList" style="margin-left: 5px" type="primary">查询</el-button>
-    </div>
 
     <div style="margin: 10px">
       <div style="border-bottom: 1px dashed #ccc" v-for="item in blogList" :key="item.id">
@@ -20,8 +15,8 @@
       <el-pagination
         background
         @current-change="handleCurrentChange"
-        :current-page="queryInfo.pageNum"
-        :page-size="queryInfo.pageSize"
+        :current-page="pageNum"
+        :page-size="pageSize"
         layout="total, prev, pager, next"
         :total="total">
       </el-pagination>
@@ -36,12 +31,8 @@ export default {
   name: 'Front',
   data() {
     return {
-      queryInfo: {
-        title: '',
-        categoryId: null,
-        pageNum: 1,
-        pageSize: 10
-      },
+      pageNum: 1,
+      pageSize: 10,
       total: 0,
       blogList: []
     }
@@ -59,19 +50,23 @@ export default {
   methods: {
     handleSizeChange(val) {
       // 每页显示的条数
-      this.queryInfo.pageSize = val
+      this.pageSize = val
       this.getBlogList()
       console.log(`每页 ${val} 条`)
     },
     handleCurrentChange(val) {
       // 显示第几页
-      this.queryInfo.pageNum = val
+      this.pageNum = val
       this.getBlogList()
       console.log(`当前页: ${val}`)
     },
     // 查询博客列表
     getBlogList() {
-      getBlogList(this.queryInfo).then(res => {
+      const query = {
+        pageNum: this.pageNum,
+        pageSize: this.pageSize
+      }
+      getBlogList(query).then(res => {
         this.blogList = res.data.data.blogList
         this.total = res.data.data.total
       })

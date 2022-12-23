@@ -157,7 +157,6 @@ export function setRouterMenus() {
     if (menus) {
       // 获取当前的路由对象名称数组
       const currentRouteNames = router.getRoutes().map(v => v.name)
-      console.log(currentRouteNames)
       menus.forEach(item => {
         // 避免重复
         if (!currentRouteNames.includes(item.name)) {

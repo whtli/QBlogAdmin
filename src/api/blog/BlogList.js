@@ -3,8 +3,8 @@ import request from '@/utils/request'
 export function getBlogs(queryInfo) {
   return request({
     url: '/blog/getBlogs',
-    method: 'get',
-    params: { ...queryInfo }
+    method: 'post',
+    data: queryInfo
   })
 }
 
