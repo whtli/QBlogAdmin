@@ -1,6 +1,6 @@
 module.exports = {
 
-  title: 'WHTLI的个人博客',
+  title: 'WHTLI博客管理系统',
   tagsView: true, // 新增
   /**
    * @type {boolean} true | false
