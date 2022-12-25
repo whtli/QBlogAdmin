@@ -1,7 +1,7 @@
 <template>
   <div>
     <div style="margin: 10px">
-      <el-input v-model="username" style="width: 200px" placeholder="请输入名称" suffix-icon="el-icon-search"></el-input>
+      <el-input v-model="username" style="width: 200px" placeholder="请输入名称" clearable suffix-icon="el-icon-search"></el-input>
       <el-button class="ml-5" type="primary" @click="loadUserList">搜索</el-button>
       <el-button type="warning" @click="reset">重置</el-button>
     </div>

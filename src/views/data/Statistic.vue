@@ -76,7 +76,7 @@
 
 <script>
 import * as echarts from 'echarts'
-import { getStatistic } from '@/api/statistic/Statistic'
+import { getStatistic } from '@/api/data/Statistic'
 
 export default {
   name: 'Statistic',
