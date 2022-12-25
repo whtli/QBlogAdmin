@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function loadComment(blogId) {
   return request({
-    url: '/front/loadComment',
+    url: '/comment/loadComment',
     method: 'get',
     params: { blogId }
   })
@@ -10,7 +10,7 @@ export function loadComment(blogId) {
 
 export function saveComment(commentForm) {
   return request({
-    url: '/front/saveComment',
+    url: '/comment/saveComment',
     method: 'post',
     data: commentForm
   })
@@ -18,7 +18,7 @@ export function saveComment(commentForm) {
 
 export function deleteCommentById(id) {
   return request({
-    url: '/front/deleteCommentById',
+    url: '/comment/deleteCommentById',
     method: 'delete',
     params: { id }
   })

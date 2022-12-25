@@ -111,7 +111,7 @@
 
 <script>
 import { getBlogInfoById } from '@/api/blog/BlogWrite'
-import { loadComment, saveComment, deleteCommentById } from '@/api/front/Comment'
+import { loadComment, saveComment, deleteCommentById } from '@/api/comment/Comment'
 export default {
   name: 'BlogRead',
   data() {

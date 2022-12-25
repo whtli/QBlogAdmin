@@ -1,6 +1,6 @@
 module.exports = {
 
-  title: '地学大数据智慧平台',
+  title: 'WHTLI的个人博客',
   tagsView: true, // 新增
   /**
    * @type {boolean} true | false

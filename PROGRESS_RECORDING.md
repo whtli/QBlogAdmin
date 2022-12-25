@@ -747,13 +747,13 @@
   </style>
   ```
 
-+ 在[Statistic.js](./src/api/statistic/Statistic.js)中定义接口函数，接收从后端传来的数据
++ 在[Statistic.js](src/api/data/Statistic.js)中定义接口函数，接收从后端传来的数据
   ```javascript
   import request from '@/utils/request'
   
   export function getStatistic() {
     return request({
-      url: '/statistic/getStatistic',
+      url: 'data/getStatistic',
       method: 'GET'
     })
   }
@@ -2214,7 +2214,7 @@
 
   ```javascript
   // 导入评论功能相关的接口
-  import { loadComment, saveComment, deleteCommentById } from '@/api/front/Comment'
+  import { loadComment, saveComment, deleteCommentById } from '@/api/comment/Comment'
   
   export default {
     name: 'BlogRead',
@@ -2280,7 +2280,7 @@
   }
   ```
 
-+ 新增评论功能相关的接口见[Comment.js](src/api/front/Comment.js)
++ 新增评论功能相关的接口见[Comment.js](src/api/comment/Comment.js)
   ```javascript
   import request from '@/utils/request'
   

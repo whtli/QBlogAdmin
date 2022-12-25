@@ -55,7 +55,7 @@ export const constantRoutes = [
     }]
   },
 
-  {
+  /*  {
     path: '/nested',
     component: Layout,
     redirect: '/nested/menu1',
@@ -112,14 +112,14 @@ export const constantRoutes = [
         meta: { title: 'menu2' }
       }
     ]
-  },
+  },*/
 
   {
     path: '/external-link',
     component: Layout,
     children: [
       {
-        path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
+        path: 'https://github.com/whtli',
         meta: { title: '外链', icon: 'link' }
       }
     ]
