@@ -180,7 +180,6 @@ export function setRouterMenus() {
               const secondLevel = {
                 path: subItem.path.replace('/', ''),
                 // component: () => import('@/views' + item.path + '/' + subItem.component),
-                // component: () => import(`@/views'${item.path}/${subItem.component}`),
                 component: resolve => require([`@/views${item.path}/${subItem.component}`], resolve),
                 name: subItem.name,
                 hidden: subItem.hidden,
