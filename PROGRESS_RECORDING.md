@@ -2522,3 +2522,90 @@ export const constantRoutes = [
     },
   }
   ```
+
+## 21. 调整返回拦截器
++ [request.js](src/utils/request.js)
+  ```javascript
+  // response interceptor
+  service.interceptors.response.use(
+    /**
+     * If you want to get http information such as headers or status
+     * Please return  response => response
+    */
+  
+    /**
+     * Determine the request status by custom code
+     * Here is just an example
+     * You can also judge the status by HTTP Status Code
+     */
+    response => {
+      const res = response.data
+  
+      // if the custom code is not 20000, it is judged as an error.
+      if (res.code !== 200) {
+        Message({
+          message: res.message || 'Error',
+          type: 'error',
+          duration: 5 * 1000
+        })
+        // 如果是401说明没有token，需要重新登陆，直接跳转到重新登录界面
+        if (res.code === 401) {
+          // store.commit('RESET_STATE')
+          router.push('Login')
+        }
+        // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
+        if (res.code === 508 || res.code === 512 || res.code === 514) {
+          // to re-login
+          MessageBox.confirm('You have been logged out, you can cancel to stay on this page, or log in again', 'Confirm logout', {
+            confirmButtonText: 'Re-Login',
+            cancelButtonText: 'Cancel',
+            type: 'warning'
+          }).then(() => {
+            store.dispatch('user/resetToken').then(() => {
+              location.reload()
+            })
+          })
+        }
+        return Promise.reject(new Error(res.message || 'Error'))
+      } else {
+        // 此处做了修改
+        return res
+      }
+    },
+    error => {
+      console.log('err: ' + error) // for debug
+      Message({
+        message: error.message,
+        type: 'error',
+        duration: 5 * 1000
+      })
+      return Promise.reject(error)
+    }
+  )
+  ```
++ [user.js](src/store/modules/user.js)
+  ```javascript
+  const actions = {
+    // user login
+    login({ commit }, userInfo) {
+      const { username, password } = userInfo
+      return new Promise((resolve, reject) => {
+        login({ username: username.trim(), password: password }).then(response => {
+          // 此处根据后端的返回逻辑，将模板更改为从返回头中获取token
+          // const token = response.headers['authorization']
+          // const userInfo = response.data.data
+          // 调整拦截器规则之后从response.data中获取token（后端有对应的调整，不再放进返回头）
+          const token = response.data
+          commit('SET_TOKEN', token)
+          commit('SET_USER_INFO', JSON.stringify(userInfo))
+          setToken(token)
+          setRouterMenus()
+          resetRouter()
+          resolve()
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+  }
+  ```
