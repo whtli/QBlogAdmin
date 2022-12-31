@@ -149,8 +149,8 @@ export default {
     getBlogList() {
       this.loading = true
       getBlogs(this.queryInfo).then(res => {
-        this.blogList = res.data.data.pageData.records
-        this.total = res.data.data.total
+        this.blogList = res.data.pageData.records
+        this.total = res.data.total
         this.loading = false
       })
     },
@@ -300,8 +300,8 @@ export default {
     // 获取分类和标签
     getCategoryAndTag() {
       getCategoryAndTag().then(res => {
-        this.categoryList = res.data.data.categoryList
-        this.tagList = res.data.data.tagList
+        this.categoryList = res.data.categoryList
+        this.tagList = res.data.tagList
       })
     }
   }

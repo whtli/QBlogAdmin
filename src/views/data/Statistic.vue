@@ -203,32 +203,32 @@ export default {
   },
   methods: {
     refresh() {
-      getStatistic().then(response => {
+      getStatistic().then(res => {
         // 博客总数
-        this.blogCount = response.data.data.blogCount
+        this.blogCount = res.data.blogCount
         // 总页面访问量
-        this.totalPageView = response.data.data.totalPageView
+        this.totalPageView = res.data.totalPageView
         // 今日页面访问量
-        this.todayPageView = response.data.data.todayPageView
+        this.todayPageView = res.data.todayPageView
         // 总独立访客数
-        this.totalUniqueVisitor = response.data.data.totalUniqueVisitor
+        this.totalUniqueVisitor = res.data.totalUniqueVisitor
         // 今日独立访客数
-        this.todayUniqueVisitor = response.data.data.todayUniqueVisitor
+        this.todayUniqueVisitor = res.data.todayUniqueVisitor
         // 总评论数
-        this.totalComment = response.data.data.totalComment
+        this.totalComment = res.data.totalComment
         // 不同分类下博客数量，饼图
-        this.blogCategoryOption.series[0].data = response.data.data.blogCategoryList
+        this.blogCategoryOption.series[0].data = res.data.blogCategoryList
         this.blogCategory = echarts.init(this.$refs.blogCategory)
         this.blogCategory.setOption(this.blogCategoryOption)
         // 各年份发表博客数量，柱状图
-        this.blogYearOption.xAxis.data = Object.keys(response.data.data.blogYearCount)
-        this.blogYearOption.series[0].data = Object.values(response.data.data.blogYearCount)
-        this.blogYearOption.series[1].data = Object.values(response.data.data.blogYearCount)
+        this.blogYearOption.xAxis.data = Object.keys(res.data.blogYearCount)
+        this.blogYearOption.series[0].data = Object.values(res.data.blogYearCount)
+        this.blogYearOption.series[1].data = Object.values(res.data.blogYearCount)
         this.blogYear = echarts.init(this.$refs.blogYear)
         this.blogYear.setOption(this.blogYearOption)
         // 当年各月份发表博客数量，圆滑折线柱状图
-        this.blogMonthOption.series[0].data = response.data.data.blogMonthList
-        this.blogMonthOption.series[1].data = response.data.data.blogMonthList
+        this.blogMonthOption.series[0].data = res.data.blogMonthList
+        this.blogMonthOption.series[1].data = res.data.blogMonthList
         this.blogMonth = echarts.init(this.$refs.blogMonth)
         this.blogMonth.setOption(this.blogMonthOption)
       })

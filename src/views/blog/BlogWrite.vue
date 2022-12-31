@@ -97,7 +97,7 @@ export default {
     getBlog(id) {
       getBlogInfoById(id).then(res => {
         // 把查询结果赋值给this.blogList，使其显示到编辑界面上
-        this.blogForm = res.data.data
+        this.blogForm = res.data
       }).catch(() => {
         this.$message({
           type: 'warning',
@@ -119,7 +119,7 @@ export default {
       addImage(formdata).then(res => {
         // 第二步.将返回的url替换到文本原位置![...](0) -> ![...](url)
         if (res.status === 200) {
-          const url = res.data.data.imageUrl
+          const url = res.data.imageUrl
           this.$refs.md.$img2Url(pos, url)
         } else {
           this.$message({ type: res.status, message: 'Image upload failed!' })
@@ -180,8 +180,8 @@ export default {
     // 获取分类和标签
     getCategoryAndTag() {
       getCategoryAndTag().then(res => {
-        this.categoryList = res.data.data.categoryList
-        this.tagList = res.data.data.tagList
+        this.categoryList = res.data.categoryList
+        this.tagList = res.data.tagList
       })
     }
   }

@@ -132,15 +132,15 @@ export default {
       params.pageNum = this.pageNum
       params.pageSize = this.pageSize
       getRoleList(params).then(res => {
-        this.tableData = res.data.data.records
-        this.total = res.data.data.total
+        this.tableData = res.data.records
+        this.total = res.data.total
       })
     },
     loadMenuList() {
       // 获取菜单列表
       getMenuList(this.menuName).then(res => {
-        this.menuList = res.data.data.menuList
-        this.allMenuIds = res.data.data.allMenuIds
+        this.menuList = res.data.menuList
+        this.allMenuIds = res.data.allMenuIds
       })
     },
     reset() {
@@ -195,7 +195,7 @@ export default {
       this.roleId = role.id
       // 查询并展示当前角色已有的菜单权限
       getMenusByRoleId(this.roleId).then(res => {
-        this.checks = res.data.data
+        this.checks = res.data
         this.allMenuIds.forEach(id => {
           // 此处的if和else是为了避免出现一级菜单被选中后其下的二级菜单都会被选中的问题
           if (this.checks.includes(id)) {

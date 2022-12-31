@@ -156,9 +156,9 @@ export default {
     getBlogInfo(blogId) {
       getBlogInfoById(blogId).then(res => {
         // 把查询结果赋值给blogList、tagList、category，使其显示到编辑界面上
-        this.tagList = res.data.data.tagList
-        this.category = res.data.data.category
-        this.blogForm = res.data.data.blog
+        this.tagList = res.data.tagList
+        this.category = res.data.category
+        this.blogForm = res.data.blog
         const createTime = this.blogForm.createTime.substring(0, 10)
         this.blogForm.createTime = createTime
       }).catch(() => {
@@ -170,7 +170,7 @@ export default {
     },
     loadComment(blogId) {
       loadComment(blogId).then(res => {
-        this.comments = res.data.data
+        this.comments = res.data
       })
     },
     saveComment() {

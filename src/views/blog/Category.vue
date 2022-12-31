@@ -113,8 +113,8 @@ export default {
     // 获取分类列表
     getCategoryList() {
       getCategories(this.queryInfo).then(res => {
-        this.categoryList = res.data.data.pageData.records
-        this.total = res.data.data.total
+        this.categoryList = res.data.pageData.records
+        this.total = res.data.total
       })
     },
     // 删除指定分类

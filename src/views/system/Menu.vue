@@ -121,14 +121,14 @@ export default {
     loadMenuList() {
       // 获取菜单列表
       getMenuList(this.menuName).then(res => {
-        this.tableData = res.data.data.menuList
-        this.total = res.data.data.total
+        this.tableData = res.data.menuList
+        this.total = res.data.total
       })
     },
     loadIcons() {
       // 获取图标信息
       getIconList().then(res => {
-        this.options = res.data.data
+        this.options = res.data
       })
     },
     reset() {

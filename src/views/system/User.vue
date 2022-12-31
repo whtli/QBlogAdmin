@@ -119,15 +119,15 @@ export default {
       params.pageNum = this.pageNum
       params.pageSize = this.pageSize
       getUserList(params).then(res => {
-        this.tableData = res.data.data.records
-        this.total = res.data.data.total
+        this.tableData = res.data.records
+        this.total = res.data.total
       })
     },
     loadRoleList() {
       // 获取角色列表
       getRoleList(this.menuName).then(res => {
-        // this.roleList = res.data.data.records.map(v => v.flag)
-        this.roleList = res.data.data.records
+        // this.roleList = res.data.records.map(v => v.flag)
+        this.roleList = res.data.records
         console.log(this.roleList)
       })
     },

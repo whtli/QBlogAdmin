@@ -98,9 +98,9 @@ export default {
         query.date = query.date[0] + ',' + query.date[1]
       }
       getOperationLogList(query).then(res => {
-        console.log(res.data.data)
-        this.logList = res.data.data.pageData.records
-        this.total = res.data.data.total
+        // console.log(res.data)
+        this.logList = res.data.pageData.records
+        this.total = res.data.total
       })
     },
     deleteLogById(id) {
