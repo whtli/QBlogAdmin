@@ -56,6 +56,9 @@
         <el-form-item label="邮箱">
           <el-input v-model="userForm.email" autocomplete="off"></el-input>
         </el-form-item>
+        <el-form-item label="密码">
+          <el-input v-model="userForm.password" autocomplete="off"></el-input>
+        </el-form-item>
         <el-form-item label="角色">
           <el-select v-model="userForm.role" clearable placeholder="请选择" style="width: 100%">
             <el-option v-for="item in roleList" :key="item.name" :label="item.name" :value="item.flag">
