@@ -2609,3 +2609,7 @@ export const constantRoutes = [
     },
   }
   ```
+
+## 22. 添加前端访问日志界面
++ 新增[VisitLog.vue](src/views/log/VisitLog.vue)
++ 新增[VisitLog.js](src/api/log/VisitLog.js)
