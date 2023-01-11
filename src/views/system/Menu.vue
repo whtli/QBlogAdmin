@@ -18,6 +18,7 @@
         default-expand-all>
         <el-table-column prop="id" label="ID" width="80"></el-table-column>
         <el-table-column prop="name" label="名称"></el-table-column>
+        <el-table-column prop="title" label="导航栏标题"></el-table-column>
         <el-table-column prop="path" label="路径"></el-table-column>
         <el-table-column prop="component" label="组件"></el-table-column>
         <el-table-column label="图标">
@@ -38,9 +39,12 @@
     </div>
 
     <el-dialog title="菜单信息" :visible.sync="dialogFormVisible" width="30%">
-      <el-form label-width="80px" size="small">
+      <el-form label-width="100px" size="small">
         <el-form-item label="名称">
           <el-input v-model="menuForm.name" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="导航栏标题">
+          <el-input v-model="menuForm.title" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="路径">
           <el-input v-model="menuForm.path" autocomplete="off"></el-input>
@@ -68,15 +72,12 @@
       </div>
     </el-dialog>
 
-    <div style="padding: 10px">
+    <div align="center" style="padding: 10px">
       <el-pagination
         background
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="pageNum"
-        :page-sizes="[5, 10, 15, 20]"
-        :page-size="pageSize"
-        layout="total, prev, pager, next"
+        :current-page="1"
+        :page-size="total"
+        layout="total"
         :total="total">
       </el-pagination>
     </div>
@@ -92,8 +93,6 @@ export default {
     return {
       tableData: [],
       total: 0,
-      pageNum: 1,
-      pageSize: 10,
       menuName: '',
       menuForm: {},
       dialogFormVisible: false,
@@ -106,18 +105,6 @@ export default {
     this.loadIcons()
   },
   methods: {
-    handleSizeChange(val) {
-      // 每页显示的条数
-      this.queryInfo.pageSize = val
-      this.getBlogList()
-      console.log(`每页 ${val} 条`)
-    },
-    handleCurrentChange(val) {
-      // 显示第几页
-      this.queryInfo.pageNum = val
-      this.getBlogList()
-      console.log(`当前页: ${val}`)
-    },
     loadMenuList() {
       // 获取菜单列表
       getMenuList(this.menuName).then(res => {
@@ -175,11 +162,4 @@ export default {
 </script>
 
 <style>
-  .fontSize18 {
-    font-size: 18px;
-  }
-
-  .fontSize12 {
-    font-size: 12px;
-  }
 </style>

@@ -25,15 +25,12 @@
         </el-table-column>
       </el-table>
     </div>
-    <div style="padding: 10px 0">
+    <div align="center" style="padding: 10px">
       <el-pagination
         background
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="pageNum"
-        :page-sizes="[5, 10, 15, 20]"
-        :page-size="pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
+        :current-page="1"
+        :page-size="total"
+        layout="total"
         :total="total">
       </el-pagination>
     </div>
@@ -88,8 +85,6 @@ export default {
     return {
       tableData: [],
       total: 0,
-      pageNum: 1,
-      pageSize: 10,
       roleName: '',
       roleForm: {},
       dialogFormVisible: false,
@@ -109,18 +104,6 @@ export default {
     this.loadMenuList()
   },
   methods: {
-    handleSizeChange(val) {
-      // 每页显示的条数
-      this.queryInfo.pageSize = val
-      this.getBlogList()
-      console.log(`每页 ${val} 条`)
-    },
-    handleCurrentChange(val) {
-      // 显示第几页
-      this.queryInfo.pageNum = val
-      this.getBlogList()
-      console.log(`当前页: ${val}`)
-    },
     handleSelectionChange(selected) {
       // 获取选中的值
       console.log('选中的值', selected.map((item) => item.id))

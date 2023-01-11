@@ -101,14 +101,14 @@ export default {
   methods: {
     handleSizeChange(val) {
       // 每页显示的条数
-      this.queryInfo.pageSize = val
-      this.getBlogList()
+      this.pageSize = val
+      this.loadUserList()
       console.log(`每页 ${val} 条`)
     },
     handleCurrentChange(val) {
       // 显示第几页
-      this.queryInfo.pageNum = val
-      this.getBlogList()
+      this.pageNum = val
+      this.loadUserList()
       console.log(`当前页: ${val}`)
     },
     handleSelectionChange(selected) {
