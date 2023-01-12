@@ -26,9 +26,9 @@ export function editCategory(form) {
   })
 }
 
-export function getCategories(queryInfo) {
+export function getCategoryList(queryInfo) {
   return request({
-    url: '/category/getCategories',
+    url: '/category/getCategoryList',
     method: 'get',
     params: { ...queryInfo }
   })

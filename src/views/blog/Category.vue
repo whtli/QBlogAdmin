@@ -68,7 +68,7 @@
 </template>
 
 <script>
-import { getCategories, addCategory, editCategory, deleteCategoryById } from '@/api/blog/Category'
+import { getCategoryList, addCategory, editCategory, deleteCategoryById } from '@/api/blog/Category'
 
 export default {
   name: 'Category',
@@ -97,22 +97,22 @@ export default {
   // 页面元素渲染之后再触发
   mounted() {
     // 进入界面后自动刷新统计数据
-    this.getCategoryList()
+    this.loadCategoryList()
   },
   methods: {
     // 每页显示的条数
     handleSizeChange(val) {
       this.queryInfo.pageSize = val
-      this.getCategoryList()
+      this.loadCategoryList()
     },
     // 显示第几页
     handleCurrentChange(val) {
       this.queryInfo.pageNum = val
-      this.getCategoryList()
+      this.loadCategoryList()
     },
     // 获取分类列表
-    getCategoryList() {
-      getCategories(this.queryInfo).then(res => {
+    loadCategoryList() {
+      getCategoryList(this.queryInfo).then(res => {
         this.categoryList = res.data.pageData.records
         this.total = res.data.total
       })
@@ -120,8 +120,8 @@ export default {
     // 删除指定分类
     deleteCategoryById(id) {
       deleteCategoryById(id).then(res => {
-        this.$message.success(res.data.message)
-        this.getCategoryList()
+        this.$message.success(res.message)
+        this.loadCategoryList()
       })
     },
     // 新增分类
@@ -129,9 +129,9 @@ export default {
       this.$refs.addFormRef.validate(valid => {
         if (valid) {
           addCategory(this.addForm).then(res => {
-            this.$message.success(res.data.message)
+            this.$message.success(res.message)
             this.addDialogVisible = false
-            this.getCategoryList()
+            this.loadCategoryList()
           })
         }
       })
@@ -152,9 +152,9 @@ export default {
       this.$refs.editFormRef.validate(valid => {
         if (valid) {
           editCategory(this.editForm).then(res => {
-            this.$message.success(res.data.message)
+            this.$message.success(res.message)
             this.editDialogVisible = false
-            this.getCategoryList()
+            this.loadCategoryList()
           })
         }
       })

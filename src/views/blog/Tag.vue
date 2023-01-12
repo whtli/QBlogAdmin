@@ -7,7 +7,7 @@
       </el-col>
     </el-row>
 
-    <el-table :data="tagList" border style="margin: 10px; width: 100%">
+    <el-table :data="tagList" border style="margin: 10px; width: 90%">
 <!--      <el-table-column label="序号" type="index" width="50"></el-table-column>-->
       <el-table-column label="名称" prop="tagName"></el-table-column>
       <el-table-column label="颜色">
@@ -160,7 +160,7 @@ export default {
     // 删除指定分类
     deleteTagById(id) {
       deleteTagById(id).then(res => {
-        this.$message.success(res.data.message)
+        this.$message.success(res.message)
         this.getTagList()
       })
     },
@@ -169,7 +169,7 @@ export default {
       this.$refs.addFormRef.validate(valid => {
         if (valid) {
           addTag(this.addForm).then(res => {
-            this.$message.success(res.data.message)
+            this.$message.success(res.message)
             this.addDialogVisible = false
             this.getTagList()
           })
@@ -192,7 +192,7 @@ export default {
       this.$refs.editFormRef.validate(valid => {
         if (valid) {
           editTag(this.editForm).then(res => {
-            this.$message.success(res.data.message)
+            this.$message.success(res.message)
             this.editDialogVisible = false
             this.getTagList()
           })

@@ -22,9 +22,9 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="标签" prop="tagList">
-                <el-select v-model="selectedTags" placeholder="请选择标签（输入可添加新标签）" clearable :allow-create="true" :filterable="true" :multiple="true" style="width: 100%;">
-                  <el-option :label="item.tagName" :value="item.id" v-for="item in tagList" :key="item.id"></el-option>
+              <el-form-item label="标签" prop="allTagList">
+                <el-select v-model="selectedTags" placeholder="请选择标签（输入可添加新标签）" clearable :filterable="true" style="width: 100%" :allow-create="true" :multiple="true">
+                  <el-option :label="item.tagName" :value="item.id" v-for="item in allTagList" :key="item.id"></el-option>
                 </el-select>
               </el-form-item>
             </el-col>
@@ -51,7 +51,7 @@ export default {
   data() {
     return {
       categoryList: [],
-      tagList: [],
+      allTagList: [],
       selectedTags: [],
       blogForm: {
         id: '',
@@ -66,7 +66,9 @@ export default {
         readTime: null,
         categoryId: null,
         top: false,
-        password: ''
+        password: '',
+        categoryName: '',
+        tagList: {}
       },
       rules: {
         title: [
@@ -96,8 +98,9 @@ export default {
     // 根据id查询唯一的博客
     getBlog(id) {
       getBlogInfoById(id).then(res => {
-        // 把查询结果赋值给this.blogList，使其显示到编辑界面上
+        // 把查询结果赋值给blogForm，使其显示到编辑界面上
         this.blogForm = res.data
+        this.selectedTags = res.data.tagList.map((item) => item.id)
       }).catch(() => {
         this.$message({
           type: 'warning',
@@ -181,7 +184,7 @@ export default {
     getCategoryAndTag() {
       getCategoryAndTag().then(res => {
         this.categoryList = res.data.categoryList
-        this.tagList = res.data.tagList
+        this.allTagList = res.data.tagList
       })
     }
   }

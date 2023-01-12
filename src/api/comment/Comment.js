@@ -1,8 +1,8 @@
 import request from '@/utils/request'
 
-export function loadComment(blogId) {
+export function getComment(blogId) {
   return request({
-    url: '/comment/loadComment',
+    url: '/comment/getComment',
     method: 'get',
     params: { blogId }
   })

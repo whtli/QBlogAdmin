@@ -437,7 +437,7 @@
       <div style="padding: 10px 0">
         <el-input placeholder="请输入标题" v-model="queryInfo.title" :clearable="true" style="width: 200px" suffix-icon="el-icon-document-remove"></el-input>
         <el-input placeholder="请输入描述" v-model="queryInfo.categoryId" :clearable="true" style="width: 200px" suffix-icon="el-icon-document"></el-input>
-        <el-button @click.native.prevent="getBlogList" style="margin-left: 5px" type="primary">查询</el-button>
+        <el-button @click.native.prevent="loadBlogList" style="margin-left: 5px" type="primary">查询</el-button>
       </div>
       <div style="margin: 10px 0">
         <el-button type="primary"><i class="el-icon-circle-plus-outline"></i> 新增</el-button>
@@ -475,7 +475,7 @@
 + 在[BlogList.vue](./src/views/blog/BlogList.vue)的methods中增加对应的功能函数
   ```javascript
   <script>
-  import { getBlogs, deleteBlogById } from '@/api/blog/BlogList'
+  import { getBlogList, deleteBlogById } from '@/api/blog/BlogList'
   
   export default {
     name: 'BlogList',
@@ -500,7 +500,7 @@
           console.log(val)
           // 老路由信息
           console.log(oldval)
-          this.getBlogList()
+          this.loadBlogList()
         },
         // 深度观察监听
         deep: true
@@ -510,18 +510,18 @@
       handleSizeChange(val) {
         // 每页显示的条数
         this.queryInfo.pageSize = val
-        this.getBlogList()
+        this.loadBlogList()
         console.log(`每页 ${val} 条`)
       },
       handleCurrentChange(val) {
         // 显示第几页
         this.queryInfo.pageNum = val
-        this.getBlogList()
+        this.loadBlogList()
         console.log(`当前页: ${val}`)
       },
       // 查询博客列表
-      getBlogList() {
-        getBlogs(this.queryInfo).then(res => {
+      loadBlogList() {
+        getBlogList(this.queryInfo).then(res => {
           this.blogList = res.data.data.pageData.records
           this.total = res.data.data.total
         })
@@ -547,7 +547,7 @@
           deleteBlogById(id).then(response => {
             this.$message.success(response.data.message)
             console.log(response.data.data.message)
-            this.getBlogList()
+            this.loadBlogList()
           })
         }).catch(() => {
           this.$message({
@@ -559,7 +559,7 @@
     },
     // 页面初始化之后默认查询所有博客并展示
     mounted() {
-      this.getBlogList()
+      this.loadBlogList()
     }
   }
   </script>
@@ -833,7 +833,7 @@
         }).then(() => {
           deleteBlogBatchByIds(ids).then(response => {
             this.$message.success(response.data.message + '，ID为： ' + ids)
-            this.getBlogList()
+            this.loadBlogList()
           })
         }).catch(() => {
           this.$message({
@@ -843,8 +843,8 @@
         })
       },
       // 查询博客列表
-      getBlogList() {
-        getBlogs(this.queryInfo).then(res => {
+      loadBlogList() {
+        getBlogList(this.queryInfo).then(res => {
         this.blogList = res.data.data.pageData.records
         this.total = res.data.data.total
         })
@@ -1469,7 +1469,7 @@
           console.log(val)
           // 老路由信息
           console.log(oldval)
-          this.getBlogList()
+          this.loadBlogList()
         },
         // 深度观察监听
         deep: true
@@ -1515,7 +1515,7 @@
       },
       // 上传成功后的回调
       handleSuccess() {
-        this.getBlogList()
+        this.loadBlogList()
       }
     },
   }

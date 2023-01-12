@@ -1,8 +1,8 @@
 import request from '@/utils/request'
 
-export function getBlogs(queryInfo) {
+export function getBlogList(queryInfo) {
   return request({
-    url: '/blog/getBlogs',
+    url: '/blog/getBlogList',
     method: 'post',
     data: queryInfo
   })

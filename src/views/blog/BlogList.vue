@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div style="padding: 10px 0; margin-left: 1%">
+    <div style="padding: 10px">
       <el-input placeholder="请输入标题" v-model="queryInfo.title" clearable style="width: 200px" suffix-icon="el-icon-document-remove"></el-input>
       <el-select v-model="queryInfo.categoryId" clearable placeholder="请选择分类" style="width: 200px" suffix-icon="el-icon-document">
         <el-option v-for="item in categoryList" :key="item.categoryName" :label="item.categoryName" :value="item.id">
@@ -15,7 +15,7 @@
           {{ item.tagName }}
         </el-option>
       </el-select>-->
-      <el-button @click.native.prevent="getBlogList" style="margin-left: 5px" type="primary">查询</el-button>
+      <el-button @click.native.prevent="loadBlogList" style="margin-left: 5px" type="primary">查询</el-button>
       <el-button type="warning" @click="reset">重置</el-button>
     </div>
     <div style="margin-left: 10px; width: 50%; display: flex; justify-content: space-between ">
@@ -29,7 +29,7 @@
       </el-upload>
       <el-button type="primary" @click="exportBlogBatch"><i class="el-icon-bottom"></i> 批量（.xlsx）导出</el-button>
     </div>
-    <div style="margin: 10px 0; margin-left: 1%">
+    <div style="margin: 10px; width: 99%">
       <el-table :data="blogList" border stripe v-loading="loading" :height="660" :header-cell-class-name="tableHeaderColor" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55"> </el-table-column>
         <el-table-column label="序号" prop="id" width="50"> </el-table-column>
@@ -52,7 +52,7 @@
 <!--        <el-table-column label="分类" prop="categoryId" width="100"> </el-table-column>-->
         <el-table-column label="分类名" prop="categoryName" width="100"> </el-table-column>
         <el-table-column label="作者" prop="userId" width="50"> </el-table-column>
-        <el-table-column label="操作">
+        <el-table-column label="操作" fixed="right">
           <template v-slot="scope">
             <el-button type="primary" icon="el-icon-view" @click="readBlog(scope.row.id)"> 查看</el-button>
             <el-button type="success" icon="el-icon-edit" @click="updateBlog(scope.row.id)"> 编辑</el-button>
@@ -79,7 +79,7 @@
 </template>
 
 <script>
-import { getBlogs, deleteBlogById, deleteBlogBatchByIds, uploadBlog, changeBlogStatusById } from '@/api/blog/BlogList'
+import { getBlogList, deleteBlogById, deleteBlogBatchByIds, uploadBlog, changeBlogStatusById } from '@/api/blog/BlogList'
 import { getCategoryAndTag } from '@/api/blog/BlogWrite'
 
 export default {
@@ -110,7 +110,7 @@ export default {
     }
   },
   created() {
-    this.getBlogList()
+    this.loadBlogList()
     this.getCategoryAndTag()
   },
   watch: {
@@ -121,7 +121,7 @@ export default {
         console.log(val)
         // 老路由信息
         console.log(oldval)
-        this.getBlogList()
+        this.loadBlogList()
       },
       // 深度观察监听
       deep: true
@@ -131,13 +131,13 @@ export default {
     handleSizeChange(val) {
       // 每页显示的条数
       this.queryInfo.pageSize = val
-      this.getBlogList()
+      this.loadBlogList()
       console.log(`每页 ${val} 条`)
     },
     handleCurrentChange(val) {
       // 显示第几页
       this.queryInfo.pageNum = val
-      this.getBlogList()
+      this.loadBlogList()
       console.log(`当前页: ${val}`)
     },
     // 获取选中的值
@@ -146,9 +146,9 @@ export default {
       // console.log('选中的值', selected.map((item) => item.id))
     },
     // 查询博客列表
-    getBlogList() {
+    loadBlogList() {
       this.loading = true
-      getBlogs(this.queryInfo).then(res => {
+      getBlogList(this.queryInfo).then(res => {
         this.blogList = res.data.pageData.records
         this.total = res.data.total
         this.loading = false
@@ -158,7 +158,7 @@ export default {
     reset() {
       this.queryInfo.title = ''
       this.queryInfo.categoryId = null
-      this.getBlogList()
+      this.loadBlogList()
     },
     // 新增博客，跳转到写博客界面
     toBlogWritePage() {
@@ -182,7 +182,7 @@ export default {
     changeBlogStatus(id) {
       changeBlogStatusById(id).then(response => {
         this.$message.success(response.data.message)
-        this.getBlogList()
+        this.loadBlogList()
       })
     },
     // 根据id删除博客
@@ -195,7 +195,7 @@ export default {
       }).then(() => {
         deleteBlogById(id).then(response => {
           this.$message.success(response.data.message)
-          this.getBlogList()
+          this.loadBlogList()
         })
       }).catch(() => {
         this.$message({
@@ -219,7 +219,7 @@ export default {
       }).then(() => {
         deleteBlogBatchByIds(ids).then(response => {
           this.$message.success(response.data.message + ',ID为: ' + ids)
-          this.getBlogList()
+          this.loadBlogList()
         })
       }).catch(() => {
         this.$message({
@@ -295,7 +295,7 @@ export default {
     },
     // 上传成功后的回调
     handleSuccess() {
-      this.getBlogList()
+      this.loadBlogList()
     },
     // 获取分类和标签
     getCategoryAndTag() {
