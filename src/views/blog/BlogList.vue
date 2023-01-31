@@ -180,8 +180,8 @@ export default {
     },
     // 更改指定博客的可见性
     changeBlogStatus(id) {
-      changeBlogStatusById(id).then(response => {
-        this.$message.success(response.data.message)
+      changeBlogStatusById(id).then(res => {
+        this.$message.success(res.message)
         this.loadBlogList()
       })
     },
@@ -193,8 +193,8 @@ export default {
         type: 'warning',
         dangerouslyUseHTMLString: true
       }).then(() => {
-        deleteBlogById(id).then(response => {
-          this.$message.success(response.data.message)
+        deleteBlogById(id).then(res => {
+          this.$message.success(res.message)
           this.loadBlogList()
         })
       }).catch(() => {
@@ -217,8 +217,8 @@ export default {
         type: 'warning',
         dangerouslyUseHTMLString: true
       }).then(() => {
-        deleteBlogBatchByIds(ids).then(response => {
-          this.$message.success(response.data.message + ',ID为: ' + ids)
+        deleteBlogBatchByIds(ids).then(res => {
+          this.$message.success(res.message + ',ID为: ' + ids)
           this.loadBlogList()
         })
       }).catch(() => {

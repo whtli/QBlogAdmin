@@ -545,8 +545,7 @@
           dangerouslyUseHTMLString: true
         }).then(() => {
           deleteBlogById(id).then(response => {
-            this.$message.success(response.data.message)
-            console.log(response.data.data.message)
+            this.$message.success(response.message)
             this.loadBlogList()
           })
         }).catch(() => {
@@ -832,7 +831,7 @@
           dangerouslyUseHTMLString: true
         }).then(() => {
           deleteBlogBatchByIds(ids).then(response => {
-            this.$message.success(response.data.message + '，ID为： ' + ids)
+            this.$message.success(response.message + '，ID为： ' + ids)
             this.loadBlogList()
           })
         }).catch(() => {
