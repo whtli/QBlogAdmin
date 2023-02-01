@@ -137,7 +137,7 @@ export default {
     imgDel(pos) {
       const url = pos[0]
       deleteImg(url).then(response => {
-        this.$alert('图片删除成功：' + response.data.data, '提示', {
+        this.$alert('图片删除成功：' + response.data, '提示', {
           confirmButtonText: '确定'
         })
       }).catch(error => {

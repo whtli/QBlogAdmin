@@ -39,7 +39,7 @@ const actions = {
       login({ username: username.trim(), password: password }).then(response => {
         // 此处根据后端的返回逻辑，将模板更改为从返回头中获取token
         // const token = response.headers['authorization']
-        // const userInfo = response.data.data
+        // const userInfo = response.data
         // 调整拦截器规则之后从response.data中获取token（后端有对应的调整，不再放进返回头）
         const token = response.data
         commit('SET_TOKEN', token)

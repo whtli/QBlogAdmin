@@ -109,7 +109,7 @@ export default {
     },
     deleteLogById(id) {
       deleteVisitLogById(id).then(res => {
-        this.$message.success(res.data.message)
+        this.$message.success(res.message)
         this.getVisitLog()
       })
     },

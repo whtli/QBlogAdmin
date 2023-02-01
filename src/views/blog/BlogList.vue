@@ -288,7 +288,7 @@ export default {
       const FormDatas = new FormData()
       FormDatas.append('file', item.file)
       uploadBlog(FormDatas).then(res => {
-        this.$message.success(res.data.message)
+        this.$message.success(res.message)
         // 成功过后刷新列表，清空上传文件列表
         this.handleSuccess()
       })

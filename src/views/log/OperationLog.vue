@@ -105,7 +105,7 @@ export default {
     },
     deleteLogById(id) {
       deleteOperationLogById(id).then(res => {
-        this.$message.success(res.data.message)
+        this.$message.success(res.message)
         this.getOperationLog()
       })
     },

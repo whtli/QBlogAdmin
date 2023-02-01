@@ -415,7 +415,7 @@
     imgDel(pos) {
       const url = pos[0]
       deleteImg(url).then(response => {
-        this.$alert('图片删除成功：' + response.data.data, '提示', {
+        this.$alert('图片删除成功：' + response.data, '提示', {
           confirmButtonText: '确定'
         })
       }).catch(error => {
@@ -732,7 +732,7 @@
     methods: {
       refresh() {
         getStatistic().then(response => {
-          this.categoryOption.series[0].data = response.data.data.blogCountList
+          this.categoryOption.series[0].data = response.data.blogCountList
           this.categoryEcharts = echarts.init(this.$refs.categoryEcharts, 'light')
           this.categoryEcharts.setOption(this.categoryOption)
         })
@@ -1393,18 +1393,18 @@
       refresh() {
         getStatistic().then(response => {
           // 不同分类下博客数量，饼图
-          this.blogCategoryOption.series[0].data = response.data.data.blogCategoryList
+          this.blogCategoryOption.series[0].data = response.data.blogCategoryList
           this.blogCategory = echarts.init(this.$refs.blogCategory)
           this.blogCategory.setOption(this.blogCategoryOption)
           // 各年份发表博客数量，柱状图
-          this.blogYearOption.xAxis.data = Object.keys(response.data.data.blogYearCount)
-          this.blogYearOption.series[0].data = Object.values(response.data.data.blogYearCount)
-          this.blogYearOption.series[1].data = Object.values(response.data.data.blogYearCount)
+          this.blogYearOption.xAxis.data = Object.keys(response.data.blogYearCount)
+          this.blogYearOption.series[0].data = Object.values(response.data.blogYearCount)
+          this.blogYearOption.series[1].data = Object.values(response.data.blogYearCount)
           this.blogYear = echarts.init(this.$refs.blogYear)
           this.blogYear.setOption(this.blogYearOption)
           // 当年各月份发表博客数量，圆滑折线柱状图
-          this.blogMonthOption.series[0].data = response.data.data.blogMonthList
-          this.blogMonthOption.series[1].data = response.data.data.blogMonthList
+          this.blogMonthOption.series[0].data = response.data.blogMonthList
+          this.blogMonthOption.series[1].data = response.data.blogMonthList
           this.blogMonth = echarts.init(this.$refs.blogMonth)
           this.blogMonth.setOption(this.blogMonthOption)
         })
@@ -1507,7 +1507,7 @@
         const FormDatas = new FormData()
         FormDatas.append('file', item.file)
         uploadBlog(FormDatas).then(res => {
-          this.$message(res.data.message)
+          this.$message(res.message)
           // 成功过后刷新列表，清空上传文件列表
           this.handleSuccess()
         })
@@ -1959,7 +1959,7 @@
         login({ username: username.trim(), password: password }).then(response => {
           // 此处根据后端的返回逻辑，将模板更改为从返回头中获取token
           const token = response.headers['authorization']
-          const userInfo = response.data.data
+          const userInfo = response.data
           commit('SET_TOKEN', token)
           commit('SET_USER_INFO', JSON.stringify(userInfo))
           setToken(token)
@@ -1984,7 +1984,7 @@
           commit('SET_NAME', name)
           commit('SET_AVATAR', avatar)
           resolve(data)*/
-          const userInfo = response.data.data
+          const userInfo = response.data
           commit('SET_USER_INFO', JSON.stringify(userInfo))
           resolve()
         }).catch(error => {
@@ -2481,7 +2481,7 @@ export const constantRoutes = [
         login({ username: username.trim(), password: password }).then(response => {
           // 此处根据后端的返回逻辑，将模板更改为从返回头中获取token
           const token = response.headers['authorization']
-          const userInfo = response.data.data
+          const userInfo = response.data
           commit('SET_TOKEN', token)
           commit('SET_USER_INFO', JSON.stringify(userInfo))
           setToken(token)
@@ -2509,7 +2509,7 @@ export const constantRoutes = [
           commit('SET_NAME', name)
           commit('SET_AVATAR', avatar)
           resolve(data)*/
-          const userInfo = response.data.data
+          const userInfo = response.data
           commit('SET_USER_INFO', JSON.stringify(userInfo))
           setRouterMenus()
           resetRouter()
@@ -2592,7 +2592,7 @@ export const constantRoutes = [
         login({ username: username.trim(), password: password }).then(response => {
           // 此处根据后端的返回逻辑，将模板更改为从返回头中获取token
           // const token = response.headers['authorization']
-          // const userInfo = response.data.data
+          // const userInfo = response.data
           // 调整拦截器规则之后从response.data中获取token（后端有对应的调整，不再放进返回头）
           const token = response.data
           commit('SET_TOKEN', token)
