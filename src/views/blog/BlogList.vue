@@ -106,7 +106,7 @@ export default {
       ExcelFileType: ['xlsx', 'xls'],
       // 运行上传文件大小，单位 M
       MarkdownFileSize: 1,
-      ExcelFileSize: 1
+      ExcelFileSize: 5
     }
   },
   created() {
@@ -272,14 +272,14 @@ export default {
         if (this.ExcelFileType.includes(suffix)) {
           return true
         } else {
-          this.$message.error('博客文件类型应为.excel文件!')
+          this.$message.error('批量上传需要使用excel文件!')
           return false
         }
       }
     },
     // 超出文件个数的回调
     handleExceed(files) {
-      this.$message.warning(`超出上传数量限制！最多上传 ${this.fileLimit} 个博客文件，选择了 ${files.length} 个博客文件`)
+      this.$message.warning(`超出上传数量限制！最多上传1个文件，选择了 ${files.length} 个博客文件`)
     },
     // 上传文件的事件
     importBlog(item) {
